@@ -1,0 +1,221 @@
+.text-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #ffffff;
+}
+
+.editor-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.editor-title {
+  font-size: 24px;
+  font-weight: 600;
+  border: none;
+  background-color: transparent;
+  color: #1a1a1a;
+  padding: 8px 12px;
+  outline: none;
+  flex: 1;
+  font-family: inherit;
+  transition: all 0.3s ease;
+}
+
+.editor-title:focus {
+  background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.edit-icon {
+  cursor: pointer;
+  font-size: 16px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-icon:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.collapse-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  color: #666666;
+}
+
+.collapse-btn:hover {
+  background-color: #f0f0f0;
+  color: #1a1a1a;
+}
+
+.editor-tabs {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0 24px;
+  background-color: #ffffff;
+}
+
+.tab-btn {
+  padding: 12px 0;
+  margin-right: 24px;
+  border: none;
+  background-color: transparent;
+  color: #666666;
+  font-size: 14px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.tab-btn:hover {
+  color: #1a1a1a;
+}
+
+.tab-btn.active {
+  color: #1a1a1a;
+  border-bottom-color: #1a1a1a;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  flex-wrap: wrap;
+}
+
+.toolbar-btn {
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: #1a1a1a;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  font-weight: 500;
+}
+
+.toolbar-btn:hover {
+  background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
+  border-color: #d0d0d0;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.toolbar-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background-color: #e0e0e0;
+  margin: 0 4px;
+}
+
+.editor-content {
+  flex: 1;
+  padding: 24px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  line-height: 1.8;
+  font-family: inherit;
+  color: #1a1a1a;
+  resize: none;
+  overflow-y: auto;
+  background-color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.editor-content:focus {
+  background-color: #fafafa;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.editor-content::placeholder {
+  color: #999999;
+}
+
+/* Scrollbar Styling */
+.editor-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.editor-content::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.editor-content::-webkit-scrollbar-thumb {
+  background-color: #d0d0d0;
+  border-radius: 4px;
+}
+
+.editor-content::-webkit-scrollbar-thumb:hover {
+  background-color: #b0b0b0;
+}
+
+@media (max-width: 768px) {
+  .editor-header {
+    padding: 12px 16px;
+  }
+
+  .editor-title {
+    font-size: 20px;
+  }
+
+  .editor-tabs {
+    padding: 0 16px;
+  }
+
+  .editor-content {
+    padding: 16px;
+  }
+
+  .toolbar {
+    padding: 6px 8px;
+    gap: 1px;
+  }
+
+  .toolbar-btn {
+    padding: 4px 6px;
+    font-size: 12px;
+    min-width: 28px;
+    height: 28px;
+  }
+}

@@ -1,0 +1,138 @@
+.header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+}
+
+.header-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  gap: 32px;
+}
+
+.header-left {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+
+.logo-subtitle {
+  font-size: 11px;
+  color: #666666;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-btn {
+  padding: 8px 16px;
+  border: none;
+  background-color: transparent;
+  color: #666666;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.nav-btn:hover {
+  background-color: #f0f0f0;
+  color: #1a1a1a;
+}
+
+.nav-btn.active {
+  color: #1a1a1a;
+  background-color: #f0f0f0;
+}
+
+.header-right {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.new-product-btn,
+.my-products-btn {
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.new-product-btn:hover,
+.my-products-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #d0d0d0;
+}
+
+.submit-review-btn {
+  padding: 8px 16px;
+  border: none;
+  background-color: #d32f2f;
+  color: #ffffff;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.submit-review-btn:hover {
+  background-color: #b71c1c;
+}
+
+@media (max-width: 1024px) {
+  .header-container {
+    padding: 0 16px;
+    gap: 16px;
+  }
+
+  .nav-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .new-product-btn,
+  .my-products-btn,
+  .submit-review-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
