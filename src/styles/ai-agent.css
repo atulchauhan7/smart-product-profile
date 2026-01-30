@@ -275,16 +275,187 @@
   line-height: 1.4;
 }
 
+@media (max-width: 1024px) {
+  .ai-agent {
+    border-left: 1px solid #e0e0e0;
+  }
+
+  .confidence-section {
+    padding: 14px;
+  }
+
+  .messages {
+    height: 380px;
+    gap: 10px;
+  }
+}
+
 @media (max-width: 768px) {
   .ai-agent {
     border-left: none;
+    height: auto;
+  }
+
+  .ai-header {
+    padding: 12px 14px;
+  }
+
+  .ai-title {
+    font-size: 14px;
+  }
+
+  .collapse-btn {
+    padding: 4px 6px;
+  }
+
+  .confidence-section {
+    padding: 12px;
+  }
+
+  .confidence-label {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  .score-number {
+    font-size: 24px;
+  }
+
+  .progress-bar {
+    height: 6px;
+  }
+
+  .messages {
+    height: 300px;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .message-content {
+    max-width: 85%;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .message-timestamp {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .input-section {
+    padding: 12px;
+  }
+
+  .input-hint {
+    font-size: 11px;
+    margin-bottom: 8px;
   }
 
   .chat-input {
     font-size: 14px;
+    padding: 8px 12px;
+    min-height: 32px;
+    border-radius: 6px;
+  }
+
+  .send-btn {
+    min-width: 36px;
+    height: 32px;
+    padding: 6px 10px;
+  }
+
+  .ai-disclaimer {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ai-agent {
+    border: none;
+  }
+
+  .ai-header {
+    padding: 10px 12px;
+  }
+
+  .ai-title {
+    font-size: 13px;
+  }
+
+  .collapse-btn {
+    padding: 4px 6px;
+    font-size: 14px;
+  }
+
+  .confidence-section {
+    padding: 10px 12px;
+  }
+
+  .confidence-label {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+
+  .score-number {
+    font-size: 20px;
+  }
+
+  .progress-bar {
+    height: 5px;
+  }
+
+  .messages {
+    height: 250px;
+    gap: 8px;
+    padding: 10px;
   }
 
   .message-content {
     max-width: 90%;
+    padding: 8px 10px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  .message-timestamp {
+    font-size: 9px;
+    padding: 2px 4px;
+    margin-top: 1px;
+  }
+
+  .input-section {
+    padding: 10px 12px;
+  }
+
+  .input-hint {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  .input-wrapper {
+    gap: 6px;
+  }
+
+  .chat-input {
+    font-size: 13px;
+    padding: 8px 10px;
+    min-height: 32px;
+    border-radius: 6px;
+  }
+
+  .send-btn {
+    min-width: 34px;
+    height: 32px;
+    padding: 6px 8px;
+    font-size: 14px;
+  }
+
+  .ai-disclaimer {
+    font-size: 9px;
+    margin-top: 6px;
+  }
+
+  .chat-container::-webkit-scrollbar {
+    width: 4px;
   }
 }

@@ -67,16 +67,40 @@ body {
   }
 }
 
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr 280px;
+  }
+}
+
 @media (max-width: 768px) {
   .layout {
     grid-template-columns: 1fr;
   }
 
   .ai-panel {
-    display: none;
+    display: none !important;
   }
 
   .editor-panel {
     border-right: none;
+  }
+
+  .layout.ai-expanded {
+    grid-template-columns: 1fr;
+  }
+
+  .layout.editor-expanded {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .app {
+    height: 100dvh;
+  }
+
+  #root {
+    height: 100dvh;
   }
 }
