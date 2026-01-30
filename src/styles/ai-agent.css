@@ -293,7 +293,7 @@
 @media (max-width: 768px) {
   .ai-agent {
     border-left: none;
-    height: auto;
+    /* height: auto; */
   }
 
   .ai-header {

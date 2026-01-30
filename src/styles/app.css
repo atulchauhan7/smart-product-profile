@@ -31,6 +31,7 @@ body {
   flex: 1;
   overflow: hidden;
   background-color: #ffffff;
+  position: relative;
 }
 
 .layout {
@@ -60,6 +61,89 @@ body {
   border-left: 1px solid #e0e0e0;
 }
 
+.resize-divider {
+  width: 1px;
+  background-color: #e0e0e0;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: background-color 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.resize-divider:hover {
+  background-color: #d32f2f;
+  width: 2px;
+}
+
+.resize-divider.dragging {
+  background-color: #d32f2f;
+  width: 3px;
+  box-shadow: 0 0 8px rgba(211, 47, 47, 0.4);
+}
+
+.divider-buttons {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 4px;
+  background-color: #ffffff;
+  padding: 6px 4px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.resize-divider:hover .divider-buttons {
+  opacity: 1;
+}
+
+.divider-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background-color: transparent;
+  color: #666666;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.divider-btn:hover {
+  background-color: #f0f0f0;
+  color: #d32f2f;
+  transform: scale(1.1);
+}
+
+.divider-btn-editor:hover {
+  background-color: #f0f0f0;
+}
+
+.divider-btn-ai:hover {
+  background-color: #f0f0f0;
+}
+
+.mobile-overlay-buttons {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  pointer-events: none;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .layout {
@@ -75,15 +159,47 @@ body {
 
 @media (max-width: 768px) {
   .layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
 
-  .ai-panel {
-    display: none !important;
+  .resize-divider {
+    display: none;
   }
 
   .editor-panel {
     border-right: none;
+    width: 100%;
+  }
+
+  .ai-panel {
+    width: 100%;
+  }
+
+  /* On mobile, hide both panels by default */
+  .ai-panel {
+    display: none;
+  }
+
+  .editor-panel {
+    display: block;
+  }
+
+  /* When AI is expanded, show only AI panel */
+  .layout.ai-expanded .ai-panel {
+    display: block !important;
+  }
+
+  .layout.ai-expanded .editor-panel {
+    display: none !important;
+  }
+
+  /* When editor is expanded, show only editor panel */
+  .layout.editor-expanded .editor-panel {
+    display: block !important;
+  }
+
+  .layout.editor-expanded .ai-panel {
+    display: none !important;
   }
 
   .layout.ai-expanded {
@@ -92,6 +208,51 @@ body {
 
   .layout.editor-expanded {
     grid-template-columns: 1fr;
+  }
+
+  .mobile-overlay-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 12px;
+    height: auto;
+    pointer-events: all;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.95), transparent);
+  }
+
+  .overlay-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+    color: white;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .overlay-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 6px rgba(211, 47, 47, 0.2);
+  }
+
+  .overlay-btn-left::after {
+    content: ' Editor';
+    font-size: 14px;
+  }
+
+  .overlay-btn-right::after {
+    content: ' AI Assistant';
+    font-size: 14px;
   }
 }
 
@@ -102,5 +263,27 @@ body {
 
   #root {
     height: 100dvh;
+  }
+
+  .mobile-overlay-buttons {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .overlay-btn {
+    padding: 10px 8px;
+    min-height: 44px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+
+  .overlay-btn-left::after {
+    content: 'Edit';
+    font-size: 12px;
+  }
+
+  .overlay-btn-right::after {
+    content: 'AI';
+    font-size: 12px;
   }
 }
