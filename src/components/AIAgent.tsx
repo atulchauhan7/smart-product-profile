@@ -108,7 +108,7 @@ export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
   return (
     <div className="ai-agent">
       <div className="ai-header">
-        <span className="ai-title">AI Plan</span>
+        <span className="ai-title">Planning Assistant</span>
         <button className="collapse-btn" onClick={onCollapse} title="Collapse AI panel">
           ▶
         </button>

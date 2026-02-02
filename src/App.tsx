@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { Header } from "./components/Header";
 import { TextEditor } from "./components/TextEditor";
 import { AIAgent } from "./components/AIAgent";
 import "./styles/app.css";
@@ -72,8 +71,6 @@ function App() {
 
   return (
     <div className="app">
-      <Header onSubmitReview={() => alert("Submit for review clicked")} />
-
       <div className="main-container" ref={containerRef}>
         {/* Left Sidebar */}
         <aside className={`left-sidebar ${leftSidebarOpen ? "open" : "collapsed"}`}>
@@ -84,7 +81,11 @@ function App() {
               title={leftSidebarOpen ? "Collapse" : "Expand"}
               aria-label="Toggle sidebar"
             >
-              ☰
+              <span className="sidebar-logo">
+                <span className="logo-text">Lilly</span>
+                <span className="logo-subtitle">Smart Product Profile</span>
+              </span>
+              <span className="toggle-icon">☰</span>
             </button>
           </div>
           

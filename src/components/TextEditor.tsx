@@ -87,6 +87,9 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
           />
           <span className="edit-icon">✏️</span>
         </div>
+        <button className="submit-review-btn" onClick={() => alert('Submit for review clicked')} title="Submit for review">
+          Submit for review
+        </button>
         <button className="collapse-btn" onClick={onCollapse} title="Collapse editor">
           ◀
         </button>
