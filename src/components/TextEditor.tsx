@@ -2,45 +2,53 @@ import { useState, FC, ChangeEvent } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import '../styles/text-editor.css';
-
+ 
 interface TextEditorProps {
   onCollapse: () => void;
 }
-
+ 
 export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
   const [title, setTitle] = useState('My Fancy Product Name');
-  
+  const [, forceUpdate] = useState(0);
+ 
+ 
   const initialContent = `<h2>General Information</h2>
 <p>Lorem ipsum is a dummy or placeholder text commonly used in graphic design, publishing, and web development. Its purpose is to permit a page layout to be designed, independently of the copy that will subsequently populate it, or to demonstrate various fonts of a typeface without meaningful text that could be distracting.</p>
-
+ 
 <p>Lorem ipsum is typically a corrupted version of De finibus bonorum et malorum, a 1st-century BC text by the Roman statesman and philosopher Cicero, with words altered, added, and removed to make it nonsensical and improper Latin. The first two words are the truncation of dolorem ipsum ("pain itself").</p>
-
+ 
 <h2>Data Information</h2>
 <p>Versions of the Lorem ipsum text have been used in typesetting since the 1960s, when advertisements for Letraset transfer sheets popularized it. Lorem ipsum was introduced to the digital world in the mid-1980s, when Aldus employed it in graphic and word-processing templates for its desktop publishing program PageMaker.</p>
-
+ 
 <h2>Legal Information</h2>
 <p>Lorem dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-
+ 
 <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>`;
-
+ 
   const editor = useEditor({
     extensions: [StarterKit],
     content: initialContent,
+      onSelectionUpdate: () => {
+    forceUpdate(n => n + 1);
+  },
+  onUpdate: () => {
+    forceUpdate(n => n + 1);
+  },
     editorProps: {
       attributes: {
         class: 'editor-content'
       }
     }
   });
-
+ 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
-
+ 
   if (!editor) {
     return null;
   }
-
+ 
   const toggleFormat = (format: string) => {
     switch (format) {
       case 'bold':
@@ -65,7 +73,7 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
         break;
     }
   };
-
+ 
   return (
     <div className="text-editor">
       <div className="editor-header">
@@ -83,70 +91,122 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
           ◀
         </button>
       </div>
-
-      <div className="editor-tabs">
-        <button className="tab-btn active">Overview</button>
-        <button className="tab-btn">Details</button>
-      </div>
-
+ 
+ 
       <div className="toolbar">
-        <button 
-          className="toolbar-btn" 
-          onClick={() => toggleFormat('bold')} 
-          title="Bold"
-          type="button"
-        >
-          <strong>B</strong>
-        </button>
-        <button 
-          className="toolbar-btn" 
-          onClick={() => toggleFormat('italic')} 
+       <button
+  className={`toolbar-btn ${editor?.isActive('bold') ? 'active' : ''}`}
+  onClick={() => toggleFormat('bold')}
+  title="Bold"
+  type="button"
+>
+  <strong>B</strong>
+</button>
+ 
+        <button
+          className={`toolbar-btn ${editor?.isActive('italic') ? 'active' : ''}`}
+          onClick={() => toggleFormat('italic')}
           title="Italic"
           type="button"
         >
           <em>I</em>
         </button>
-        <button 
-          className="toolbar-btn" 
-          onClick={() => toggleFormat('underline')} 
+        <button
+          className={`toolbar-btn ${editor?.isActive('underline') ? 'active' : ''}`}
+          onClick={() => toggleFormat('underline')}
           title="Underline"
           type="button"
         >
           <u>U</u>
         </button>
-        <div className="toolbar-divider"></div>
-        <button 
-          className="toolbar-btn" 
-          onClick={() => toggleFormat('bullet')}
-          title="Bullet list"
+         <button
+          className={`toolbar-btn ${editor?.isActive('italic') ? 'active' : ''}`}
+          onClick={() => toggleFormat('italic')}
+          title="Italic"
           type="button"
         >
-          •
+          <h4>A</h4><strong><h5>A</h5></strong>
         </button>
-        <button 
-          className="toolbar-btn" 
+        <div className="toolbar-divider"></div>
+       <button
+  className={`toolbar-btn ${editor?.isActive('bulletList') ? 'active' : ''}`}
+  onClick={() => toggleFormat('bullet')}
+  title="Bullet list"
+  type="button"
+>
+  <img
+    src="/src/assets/icons-bulleted-list.svg"
+    alt="Bullet list"
+    className="toolbar-icon"
+  />
+</button>
+ 
+        <button
+          className={`toolbar-btn ${editor?.isActive('orderedList') ? 'active' : ''}`}
           onClick={() => toggleFormat('ordered')}
           title="Number list"
           type="button"
         >
-          1.
+        <img
+    src="/src/assets/better-number-list.svg"
+    alt="Bullet list"
+    className="toolbar-icon"
+  />
         </button>
-        <button 
-          className="toolbar-btn" 
+        <button
+          className={`toolbar-btn ${editor?.isActive('blockquote') ? 'active' : ''}`}
           onClick={() => toggleFormat('blockquote')}
           title="Quote"
           type="button"
         >
           ❝
         </button>
+          <button
+          className={`toolbar-btn`}
+          onClick={() => toggleFormat('blockquote')}
+          title="Quote"
+          type="button"
+        >
+           <img
+    src="/src/assets/left-indent.svg"
+    alt="Bullet list"
+    className="toolbar-icon"
+  />
+        </button>
+        <button
+          className={`toolbar-btn`}
+          onClick={() => toggleFormat('blockquote')}
+          title="Quote"
+          type="button"
+        >
+           <img
+    src="/src/assets/right-indent.svg"
+    alt="Bullet list"
+    className="toolbar-icon"
+  />
+        </button>
         <div className="toolbar-divider"></div>
-        <button className="toolbar-btn" title="Link" type="button">🔗</button>
-        <button className="toolbar-btn" title="Image" type="button">🖼️</button>
-        <button className="toolbar-btn" title="File" type="button">📎</button>
-        <button className="toolbar-btn" title="Mention" type="button">@</button>
+        <button className="toolbar-btn" title="Link" type="button">
+           <img
+    src="/src/assets/link-building.svg"
+    alt="Bullet list"
+    className="toolbar-icon"
+  />
+  </button>
+        <button className="toolbar-btn" title="Image" type="button">
+           <img
+    src="/src/assets/file.svg"
+    alt="Bullet list"
+    className="toolbar-icon"
+  /></button>
+        <button className="toolbar-btn" title="File" type="button">  <img
+    src="/src/assets/image.svg"
+    alt="Bullet list"
+    className="toolbar-icon"
+  /></button>
       </div>
-
-      <EditorContent editor={editor} />
+ <div className="editor-body"> <EditorContent editor={editor} /></div>
+     
     </div>
   );
 };

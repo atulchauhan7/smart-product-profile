@@ -11,28 +11,31 @@ function App() {
   const [editorWidth, setEditorWidth] = useState(50); // Default 50% width
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const widthRef = useRef(50);
 
   // Load saved preference from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('editorWidth');
     if (saved) {
-      setEditorWidth(parseInt(saved));
+      const width = parseInt(saved);
+      setEditorWidth(width);
+      widthRef.current = width;
     }
   }, []);
 
-  // Handle dragging the divider
+  // Handle dragging the divider - optimized for smooth cursor-following
   useEffect(() => {
     if (!isDragging) return;
 
     const handleMouseMove = (e: MouseEvent) => {
-      e.preventDefault();
       if (!containerRef.current) return;
 
       const rect = containerRef.current.getBoundingClientRect();
       const newWidth = ((e.clientX - rect.left) / rect.width) * 100;
 
-      // Constrain between 20% and 80% with smooth updates
+      // Constrain between 20% and 80%
       if (newWidth >= 20 && newWidth <= 80) {
+        widthRef.current = newWidth;
         setEditorWidth(newWidth);
       }
     };
@@ -40,18 +43,18 @@ function App() {
     const handleMouseUp = () => {
       setIsDragging(false);
       // Save preference to localStorage
-      localStorage.setItem('editorWidth', editorWidth.toString());
+      localStorage.setItem('editorWidth', widthRef.current.toFixed(2));
     };
 
-    // Use capturing phase for better responsiveness
-    document.addEventListener('mousemove', handleMouseMove, true);
-    document.addEventListener('mouseup', handleMouseUp, true);
+    // Attach listeners with high priority
+    document.addEventListener('mousemove', handleMouseMove, { capture: true, passive: true });
+    document.addEventListener('mouseup', handleMouseUp, { capture: true });
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove, true);
       document.removeEventListener('mouseup', handleMouseUp, true);
     };
-  }, [isDragging, editorWidth]);
+  }, [isDragging]);
 
   const handleEditorCollapse = () => {
     setLayoutMode(layoutMode === 'editor-expanded' ? 'full' : 'editor-expanded');
@@ -77,7 +80,7 @@ function App() {
       
       <div className="main-container" ref={containerRef}>
         <div 
-          className={`layout ${layoutMode}`}
+          className={`layout ${layoutMode} ${isDragging ? 'dragging' : ''}`}
           style={{
             gridTemplateColumns: layoutMode === 'full' && window.innerWidth > 768
               ? `${editorWidth}% 1px ${100 - editorWidth}%`
