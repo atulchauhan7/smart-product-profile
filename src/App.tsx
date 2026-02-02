@@ -10,6 +10,7 @@ function App() {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("full");
   const [editorWidth, setEditorWidth] = useState(50); // Default 50% width
   const [isDragging, setIsDragging] = useState(false);
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const widthRef = useRef(50);
 
@@ -74,6 +75,36 @@ function App() {
       <Header onSubmitReview={() => alert("Submit for review clicked")} />
 
       <div className="main-container" ref={containerRef}>
+        {/* Left Sidebar */}
+        <aside className={`left-sidebar ${leftSidebarOpen ? "open" : "collapsed"}`}>
+          <div className="sidebar-header">
+            <button 
+              className="sidebar-toggle"
+              onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
+              title={leftSidebarOpen ? "Collapse" : "Expand"}
+              aria-label="Toggle sidebar"
+            >
+              ☰
+            </button>
+          </div>
+          
+          <nav className="sidebar-nav">
+            <button className="nav-item active">
+              <span className="nav-icon">📋</span>
+              <span className="nav-label">Product details</span>
+            </button>
+            <button className="nav-item">
+              <span className="nav-icon">👥</span>
+              <span className="nav-label">Collaborations</span>
+            </button>
+            <button className="nav-item">
+              <span className="nav-icon">✉️</span>
+              <span className="nav-label">Invite</span>
+            </button>
+          </nav>
+        </aside>
+
+        {/* Main Content Area */}
         <div
           className={`layout ${layoutMode} ${isDragging ? "dragging" : ""}`}
           style={{
@@ -93,22 +124,7 @@ function App() {
               onMouseDown={() => setIsDragging(true)}
             >
               <div className="divider-buttons">
-                {/* <button
-                  className="divider-btn divider-btn-editor"
-                  onClick={handleEditorMinimize}
-                  title="Minimize editor (10%)"
-                  aria-label="Minimize editor"
-                >
-                  ◀
-                </button> */}
-                {/* <button
-                  className="divider-btn divider-btn-ai"
-                  onClick={handleAIMinimize}
-                  title="Minimize AI (10%)"
-                  aria-label="Minimize AI"
-                >
-                  ▶
-                </button> */}
+                {/* Reserved for future buttons */}
               </div>
             </div>
           )}
@@ -117,6 +133,24 @@ function App() {
             <AIAgent onCollapse={handleAICollapse} />
           </div>
         </div>
+
+        {/* Right Sidebar */}
+        <aside className="right-sidebar">
+          <div className="sidebar-nav right-nav">
+            <button className="nav-item-icon" title="Settings" aria-label="Settings">
+              ⚙️
+            </button>
+            <button className="nav-item-icon" title="Copy" aria-label="Copy">
+              📋
+            </button>
+            <button className="nav-item-icon" title="Share" aria-label="Share">
+              🔗
+            </button>
+            <button className="nav-item-icon" title="More" aria-label="More options">
+              ⋯
+            </button>
+          </div>
+        </aside>
 
         {/* Mobile overlay buttons */}
         <div className="mobile-overlay-buttons">
