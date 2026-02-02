@@ -94,10 +94,6 @@ function App() {
               <span className="nav-label">Product details</span>
             </button>
             <button className="nav-item">
-              <span className="nav-icon">👥</span>
-              <span className="nav-label">Collaborations</span>
-            </button>
-            <button className="nav-item">
               <span className="nav-icon">✉️</span>
               <span className="nav-label">Invite</span>
             </button>
