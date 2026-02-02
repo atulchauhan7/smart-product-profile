@@ -1,13 +1,13 @@
-import { useState, useRef, useEffect } from 'react';
-import { Header } from './components/Header';
-import { TextEditor } from './components/TextEditor';
-import { AIAgent } from './components/AIAgent';
-import './styles/app.css';
+import { useState, useRef, useEffect } from "react";
+import { Header } from "./components/Header";
+import { TextEditor } from "./components/TextEditor";
+import { AIAgent } from "./components/AIAgent";
+import "./styles/app.css";
 
-type LayoutMode = 'full' | 'editor-expanded' | 'ai-expanded';
+type LayoutMode = "full" | "editor-expanded" | "ai-expanded";
 
 function App() {
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>('full');
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("full");
   const [editorWidth, setEditorWidth] = useState(50); // Default 50% width
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,7 +15,7 @@ function App() {
 
   // Load saved preference from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem('editorWidth');
+    const saved = localStorage.getItem("editorWidth");
     if (saved) {
       const width = parseInt(saved);
       setEditorWidth(width);
@@ -43,57 +43,53 @@ function App() {
     const handleMouseUp = () => {
       setIsDragging(false);
       // Save preference to localStorage
-      localStorage.setItem('editorWidth', widthRef.current.toFixed(2));
+      localStorage.setItem("editorWidth", widthRef.current.toFixed(2));
     };
 
     // Attach listeners with high priority
-    document.addEventListener('mousemove', handleMouseMove, { capture: true, passive: true });
-    document.addEventListener('mouseup', handleMouseUp, { capture: true });
+    document.addEventListener("mousemove", handleMouseMove, {
+      capture: true,
+      passive: true,
+    });
+    document.addEventListener("mouseup", handleMouseUp, { capture: true });
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove, true);
-      document.removeEventListener('mouseup', handleMouseUp, true);
+      document.removeEventListener("mousemove", handleMouseMove, true);
+      document.removeEventListener("mouseup", handleMouseUp, true);
     };
   }, [isDragging]);
 
   const handleEditorCollapse = () => {
-    setLayoutMode(layoutMode === 'editor-expanded' ? 'full' : 'editor-expanded');
+    setLayoutMode(
+      layoutMode === "editor-expanded" ? "full" : "editor-expanded",
+    );
   };
 
   const handleAICollapse = () => {
-    setLayoutMode(layoutMode === 'ai-expanded' ? 'full' : 'ai-expanded');
+    setLayoutMode(layoutMode === "ai-expanded" ? "full" : "ai-expanded");
   };
-
-  // const handleEditorMinimize = () => {
-  //   setEditorWidth(10);
-  //   localStorage.setItem('editorWidth', '10');
-  // };
-
-  // const handleAIMinimize = () => {
-  //   setEditorWidth(90);
-  //   localStorage.setItem('editorWidth', '90');
-  // };
 
   return (
     <div className="app">
-      <Header onSubmitReview={() => alert('Submit for review clicked')} />
-      
+      <Header onSubmitReview={() => alert("Submit for review clicked")} />
+
       <div className="main-container" ref={containerRef}>
-        <div 
-          className={`layout ${layoutMode} ${isDragging ? 'dragging' : ''}`}
+        <div
+          className={`layout ${layoutMode} ${isDragging ? "dragging" : ""}`}
           style={{
-            gridTemplateColumns: layoutMode === 'full' && window.innerWidth > 768
-              ? `${editorWidth}% 1px ${100 - editorWidth}%`
-              : undefined
+            gridTemplateColumns:
+              layoutMode === "full" && window.innerWidth > 768
+                ? `${editorWidth}% 1px ${100 - editorWidth}%`
+                : undefined,
           }}
         >
           <div className="editor-panel">
             <TextEditor onCollapse={handleEditorCollapse} />
           </div>
-          
-          {layoutMode === 'full' && (
-            <div 
-              className={`resize-divider ${isDragging ? 'dragging' : ''}`}
+
+          {layoutMode === "full" && (
+            <div
+              className={`resize-divider ${isDragging ? "dragging" : ""}`}
               onMouseDown={() => setIsDragging(true)}
             >
               <div className="divider-buttons">
@@ -116,7 +112,7 @@ function App() {
               </div>
             </div>
           )}
-          
+
           <div className="ai-panel">
             <AIAgent onCollapse={handleAICollapse} />
           </div>
@@ -124,9 +120,9 @@ function App() {
 
         {/* Mobile overlay buttons */}
         <div className="mobile-overlay-buttons">
-          {layoutMode === 'full' && (
+          {layoutMode === "full" && (
             <>
-              <button 
+              <button
                 className="overlay-btn overlay-btn-left"
                 onClick={handleEditorCollapse}
                 title="Expand Editor"
@@ -134,7 +130,7 @@ function App() {
               >
                 ✏️
               </button>
-              <button 
+              <button
                 className="overlay-btn overlay-btn-right"
                 onClick={handleAICollapse}
                 title="Expand AI"
