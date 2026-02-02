@@ -147,7 +147,7 @@ function App() {
               🔗
             </button>
             <button className="nav-item-icon" title="More" aria-label="More options">
-              ⋯
+              ⋮
             </button>
           </div>
         </aside>
