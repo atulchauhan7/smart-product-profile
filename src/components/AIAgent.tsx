@@ -44,6 +44,7 @@ export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
 
   const [inputValue, setInputValue] = useState("");
   const [confidenceScore] = useState(70);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -66,6 +67,15 @@ export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const handleCopyMessage = (messageId: string, content: string) => {
+    navigator.clipboard.writeText(content).then(() => {
+      setCopiedMessageId(messageId);
+      setTimeout(() => {
+        setCopiedMessageId(null);
+      }, 2000);
+    });
+  };
 
   const generateDummyResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();
@@ -174,6 +184,15 @@ export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
         <div className="messages">
           {messages.map((message) => (
             <div key={message.id} className={`message ${message.role}`}>
+              <div className="message-header">
+                <button
+                  className="copy-btn"
+                  onClick={() => handleCopyMessage(message.id, message.content)}
+                  title="Copy message"
+                >
+                  {copiedMessageId === message.id ? "Copied!" : "Copy"}
+                </button>
+              </div>
               <div className="message-content">
                 {message.content}
                 {message.attachments && message.attachments.length > 0 && (
