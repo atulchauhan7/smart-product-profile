@@ -30,13 +30,7 @@
   align-items: flex-start;
 }
 
-/* .logo-text {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1a1a1a;
-  letter-spacing: -0.3px;
-  font-family: 'Georgia', serif;
-} */
+
 
 .logo-subtitle {
   font-size: 10px;
@@ -154,9 +148,6 @@
     gap: 12px;
   }
 
-  /* .logo-text {
-    font-size: 16px;
-  } */
 
   .logo-subtitle {
     display: none;
@@ -188,9 +179,6 @@
     gap: 8px;
   }
 
-  /* .logo-text {
-    font-size: 14px;
-  } */
 
   .submit-review-btn {
     padding: 6px 10px;

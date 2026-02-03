@@ -40,7 +40,7 @@ Click on `http://localhost:5173/` or paste it into your browser
 ## First Time Usage
 
 ### 1. Edit Product Name
-- Click on "My Fancy Product Name" at the top
+- Click on "Untitled Product" at the top
 - Type your product name
 - Click elsewhere to save
 

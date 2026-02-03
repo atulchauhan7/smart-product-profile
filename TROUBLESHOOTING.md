@@ -194,7 +194,7 @@ export default defineConfig({
 
 #### Issue: Can't edit product title
 **Solution:**
-1. Click directly on the text "My Fancy Product Name"
+1. Click directly on the text "Untitled Product"
 2. Wait for text to become editable
 3. Clear it and type new name
 4. Click elsewhere to save
