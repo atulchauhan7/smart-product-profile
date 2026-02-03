@@ -4,7 +4,6 @@ import { ChatMessage } from "../types";
 
 interface AIAgentProps {
   onCollapse: () => void;
-  editorContent?: string;
   onProposeChanges?: (newContent: string) => void;
 }
 
@@ -14,7 +13,6 @@ type ChatMessageWithAttachment = ChatMessage & {
 
 export const AIAgent: FC<AIAgentProps> = ({
   onCollapse,
-  editorContent = "",
   onProposeChanges,
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);

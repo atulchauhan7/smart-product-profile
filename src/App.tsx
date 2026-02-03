@@ -10,7 +10,6 @@ function App() {
   const [editorWidth, setEditorWidth] = useState(50); // Default 50% width
   const [isDragging, setIsDragging] = useState(false);
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
-  const [editorContent, setEditorContent] = useState("");
   const [editorRef, setEditorRef] = useState<any>(null);
   const [proposedChanges, setProposedChanges] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -75,7 +74,6 @@ function App() {
   const handleApplyChanges = (newContent: string) => {
     if (editorRef) {
       editorRef.commands.setContent(newContent);
-      setEditorContent(newContent);
       setProposedChanges(null);
     }
   };
@@ -153,7 +151,6 @@ function App() {
           <div className="editor-panel">
             <TextEditor
               onCollapse={handleEditorCollapse}
-              onContentChange={setEditorContent}
               onEditorReady={setEditorRef}
               proposedChanges={proposedChanges}
               onAcceptChanges={handleApplyChanges}
@@ -175,7 +172,6 @@ function App() {
           <div className="ai-panel">
             <AIAgent
               onCollapse={handleAICollapse}
-              editorContent={editorContent}
               onProposeChanges={setProposedChanges}
             />
           </div>
