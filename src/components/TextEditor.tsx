@@ -8,7 +8,7 @@ interface TextEditorProps {
 }
  
 export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
-  const [title, setTitle] = useState('My Fancy Product Name');
+  const [title, setTitle] = useState('Untitled Product');
   const [, forceUpdate] = useState(0);
  
  
@@ -85,7 +85,6 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
             onChange={handleTitleChange}
             placeholder="Enter product name"
           />
-          <span className="edit-icon">✏️</span>
         </div>
         <button className="submit-review-btn" onClick={() => alert('Submit for review clicked')} title="Submit for review">
           Submit for review

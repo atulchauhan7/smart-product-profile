@@ -75,27 +75,27 @@ function App() {
         {/* Left Sidebar */}
         <aside className={`left-sidebar ${leftSidebarOpen ? "open" : "collapsed"}`}>
           <div className="sidebar-header">
-            <button 
-              className="sidebar-toggle"
-              onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
-              title={leftSidebarOpen ? "Collapse" : "Expand"}
-              aria-label="Toggle sidebar"
-            >
-              <span className="sidebar-logo">
-                <span className="logo-text"><img src="/src/assets/lilly-black-logo.png" alt="Attach" className="attach-icon" /></span>
-                <span className="logo-subtitle">Smart Product Profile</span>
-              </span>
-              <span className="toggle-icon">☰</span>
-            </button>
+           <button 
+  className="sidebar-toggle"
+  onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
+  title={leftSidebarOpen ? "Collapse" : "Expand"}
+  aria-label="Toggle sidebar"
+>
+  <span><img src="/src/assets/panel-left.svg" alt="panel" className="panel-left" /></span>
+  <span className="sidebar-logo">
+    <img src="/src/assets/lilly-black-logo.png" alt="lilly" className="lilly-logo" />
+    <span className="logo-text">Smart Product Profile</span>
+  </span>
+</button>
           </div>
           
           <nav className="sidebar-nav">
             <button className="nav-item active">
-              <span className="nav-icon"><img src="/src/assets/file-text.svg" alt="Attach" className="attach-icon" /></span>
+              <span className="nav-icon"><img src="/src/assets/file-text.svg" alt="Product details" className="attach-icon" /></span>
               <span className="nav-label">Product details</span>
             </button>
             <button className="nav-item">
-              <span className="nav-icon"><img src="/src/assets/users.svg" alt="Attach" className="attach-icon" /></span>
+              <span className="nav-icon"><img src="/src/assets/users.svg" alt="Invite" className="invite-icon" /></span>
               <span className="nav-label">Invite</span>
             </button>
           </nav>
