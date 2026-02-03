@@ -30,8 +30,6 @@
   align-items: flex-start;
 }
 
-
-
 .logo-subtitle {
   font-size: 10px;
   color: #888;
@@ -148,7 +146,6 @@
     gap: 12px;
   }
 
-
   .logo-subtitle {
     display: none;
   }
@@ -178,7 +175,6 @@
     padding: 0 10px;
     gap: 8px;
   }
-
 
   .submit-review-btn {
     padding: 6px 10px;
