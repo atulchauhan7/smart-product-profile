@@ -1,5 +1,5 @@
-import { FC } from 'react';
-import '../styles/header.css';
+import { FC } from "react";
+import "../styles/header.css";
 
 interface HeaderProps {
   onSubmitReview: () => void;
@@ -11,7 +11,13 @@ export const Header: FC<HeaderProps> = ({ onSubmitReview }) => {
       <div className="header-container">
         <div className="header-left">
           <div className="logo">
-            <span className="logo-text"><img src="/src/assets/lilly-black-logo.png" alt="Attach" className="attach-icon" /></span>
+            <span className="logo-text">
+              <img
+                src="/src/assets/lilly-black-logo.png"
+                alt="Attach"
+                className="attach-icon"
+              />
+            </span>
             <span className="logo-subtitle">Smart Product Profile</span>
           </div>
         </div>
