@@ -7,7 +7,7 @@ interface TextEditorProps {
   onCollapse: () => void;
 }
  
-export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
+export const TextEditor: FC<TextEditorProps> = () => {
   const [title, setTitle] = useState('Untitled Product');
   const [, forceUpdate] = useState(0);
  
@@ -83,15 +83,15 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
             className="editor-title"
             value={title}
             onChange={handleTitleChange}
-            placeholder="Enter product name"
+            placeholder="Enter product name" 
           />
         </div>
         <button className="submit-review-btn" onClick={() => alert('Submit for review clicked')} title="Submit for review">
           Submit for review
         </button>
-        <button className="collapse-btn" onClick={onCollapse} title="Collapse editor">
+        {/* <button className="collapse-btn" onClick={onCollapse} title="Collapse editor">
           ◀
-        </button>
+        </button> */}
       </div>
  
  

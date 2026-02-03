@@ -10,7 +10,8 @@ type ChatMessageWithAttachment = ChatMessage & {
   attachments?: File[];
 };
 
-export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
+// export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
+  export const AIAgent: FC<AIAgentProps> = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const [messages, setMessages] = useState<ChatMessageWithAttachment[]>([
@@ -42,6 +43,7 @@ export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
 
   const [inputValue, setInputValue] = useState('');
   const [confidenceScore] = useState(70);
+  const [showTooltip, setShowTooltip] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -137,15 +139,28 @@ const autoResizeTextarea = () => {
     <div className="ai-agent">
       <div className="ai-header">
         <span className="ai-title">Planning Assistant</span>
-        <button className="collapse-btn" onClick={onCollapse} title="Collapse AI panel">
+        {/* <button className="collapse-btn" onClick={onCollapse} title="Collapse AI panel">
           ▶
-        </button>
+        </button> */}
       </div>
 
      <div className="confidence-section">
   <div className="confidence-label">
-    <span>Confidence score</span>    <span className="info-icon"><img src="./src/assets/info.svg" alt="Attach" className="info-icon"/></span>
-
+    <span>Confidence score</span>
+    <span className="info-icon-wrapper">
+      <button 
+        className="info-button"
+        onClick={() => setShowTooltip(!showTooltip)}
+        onBlur={() => setShowTooltip(false)}
+      >
+        <img src="./src/assets/info.svg" alt="Info" className="info-icon"/>
+      </button>
+      {showTooltip && (
+        <span className="tooltip">
+          An estimation of how much info you've provided. You must have a score of 65% or higher to submit
+        </span>
+      )}
+    </span>
     <span className="score-number">{confidenceScore}%</span>
   </div>
   <div className="progress-bar">
