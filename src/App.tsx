@@ -73,29 +73,53 @@ function App() {
     <div className="app">
       <div className="main-container" ref={containerRef}>
         {/* Left Sidebar */}
-        <aside className={`left-sidebar ${leftSidebarOpen ? "open" : "collapsed"}`}>
+        <aside
+          className={`left-sidebar ${leftSidebarOpen ? "open" : "collapsed"}`}
+        >
           <div className="sidebar-header">
-           <button 
-  className="sidebar-toggle"
-  onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
-  title={leftSidebarOpen ? "Collapse" : "Expand"}
-  aria-label="Toggle sidebar"
->
-  <span><img src="/src/assets/panel-left.svg" alt="panel" className="panel-left" /></span>
-  <span className="sidebar-logo">
-    <img src="/src/assets/lilly-black-logo.png" alt="lilly" className="lilly-logo" />
-    <span className="logo-text">Smart Product Profile</span>
-  </span>
-</button>
+            <button
+              className="sidebar-toggle"
+              onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
+              title={leftSidebarOpen ? "Collapse" : "Expand"}
+              aria-label="Toggle sidebar"
+            >
+              <span>
+                <img
+                  src="/src/assets/panel-left.svg"
+                  alt="panel"
+                  className="panel-left"
+                />
+              </span>
+              <span className="sidebar-logo">
+                <img
+                  src="/src/assets/lilly-black-logo.png"
+                  alt="lilly"
+                  className="lilly-logo"
+                />
+                <span className="logo-text">Smart Product Profile</span>
+              </span>
+            </button>
           </div>
-          
+
           <nav className="sidebar-nav">
             <button className="nav-item active">
-              <span className="nav-icon"><img src="/src/assets/file-text.svg" alt="Product details" className="attach-icon" /></span>
+              <span className="nav-icon">
+                <img
+                  src="/src/assets/file-text.svg"
+                  alt="Product details"
+                  className="attach-icon"
+                />
+              </span>
               <span className="nav-label">Product details</span>
             </button>
             <button className="nav-item">
-              <span className="nav-icon"><img src="/src/assets/users.svg" alt="Invite" className="invite-icon" /></span>
+              <span className="nav-icon">
+                <img
+                  src="/src/assets/users.svg"
+                  alt="Invite"
+                  className="invite-icon"
+                />
+              </span>
               <span className="nav-label">Invite</span>
             </button>
           </nav>
@@ -134,7 +158,11 @@ function App() {
         {/* Right Sidebar */}
         <aside className="right-sidebar">
           <div className="sidebar-nav right-nav">
-            <button className="nav-item-icon" title="Settings" aria-label="Settings">
+            <button
+              className="nav-item-icon"
+              title="Settings"
+              aria-label="Settings"
+            >
               ⚙️
             </button>
             <button className="nav-item-icon" title="Copy" aria-label="Copy">
@@ -143,7 +171,11 @@ function App() {
             <button className="nav-item-icon" title="Share" aria-label="Share">
               🔗
             </button>
-            <button className="nav-item-icon" title="More" aria-label="More options">
+            <button
+              className="nav-item-icon"
+              title="More"
+              aria-label="More options"
+            >
               ⋮
             </button>
           </div>
