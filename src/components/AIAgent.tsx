@@ -4,14 +4,21 @@ import { ChatMessage } from "../types";
 
 interface AIAgentProps {
   onCollapse: () => void;
+  editorContent?: string;
+  onProposeChanges?: (newContent: string) => void;
 }
 
 type ChatMessageWithAttachment = ChatMessage & {
   attachments?: File[];
 };
 
-export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
+export const AIAgent: FC<AIAgentProps> = ({
+  onCollapse,
+  editorContent = "",
+  onProposeChanges,
+}) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
   const [messages, setMessages] = useState<ChatMessageWithAttachment[]>([
     {
@@ -44,7 +51,6 @@ export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
 
   const [inputValue, setInputValue] = useState("");
   const [confidenceScore] = useState(70);
-  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -77,6 +83,10 @@ export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
     });
   };
 
+  const isHTMLContent = (content: string): boolean => {
+    return content.trim().startsWith("<") && content.includes("</");
+  };
+
   const generateDummyResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();
 
@@ -92,18 +102,21 @@ export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
       grammar:
         "Your content looks good from a grammar perspective! A few tips:\n\n• Keep sentences concise (15-20 words)\n• Use short paragraphs (2-3 sentences)\n• Break up longer sections with bullet points\n• Ensure consistent tense throughout\n• Proofread for typos and formatting\n\nConsistency and clarity are key!",
 
-      default: `<h2>1General Information</h2>
-<p>Lorem ipsum is a dummy or placeholder text commonly used in graphic design, publishing, and web development. Its purpose is to permit a page layout to be designed, independently of the copy that will subsequently populate it, or to demonstrate various fonts of a typeface without meaningful text that could be distracting.</p>
+      rewrite: `<h2>General Information</h2>
+<p>Lorem ipsum is a sophisticated placeholder text widely utilized across graphic design, publishing, and web development industries. It enables designers to create page layouts without being distracted by meaningful content, while effectively demonstrating various typeface fonts.</p>
  
-<p>Lorem ipsum is typically a corrupted version of De finibus bonorum et malorum, a 1st-century BC text by the Roman statesman and philosopher Cicero, with words altered, added, and removed to make it nonsensical and improper Latin. The first two words are the truncation of dolorem ipsum ("pain itself").</p>
+<p>This text derives from De finibus bonorum et malorum, a philosophical work by Roman statesman Cicero from the 1st century BC. The version we use today has been deliberately altered with modified, added, and removed words to create nonsensical Latin. The opening words "lorem ipsum" are a truncation of "dolorem ipsum" (pain itself).</p>
  
 <h2>Data Information</h2>
-<p>Versions of the Lorem ipsum text have been used in typesetting since the 1960s, when advertisements for Letraset transfer sheets popularized it. Lorem ipsum was introduced to the digital world in the mid-1980s, when Aldus employed it in graphic and word-processing templates for its desktop publishing program PageMaker.</p>
+<p>Since the 1960s, Lorem ipsum has been a standard in typesetting, gaining widespread popularity through Letraset transfer sheet advertisements. The digital revolution of the mid-1980s saw its integration into Aldus PageMaker's graphic and word-processing templates, cementing its role in modern desktop publishing.</p>
  
 <h2>Legal Information</h2>
-<p>Lorem dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. This industry-standard placeholder ensures legal documentation maintains proper formatting during the drafting process. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua, providing structure without content distraction.</p>
  
-<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>`,
+<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Professional standards require placeholder text that maintains readability while avoiding meaningful interpretation during the review process.</p>`,
+
+      default:
+        "That's an excellent point! Here's my feedback:\n\nYour product description has a solid foundation. To make it even better:\n\n1. **Be More Specific** - Add concrete examples and use cases\n2. **Highlight Unique Value** - What sets this product apart?\n3. **Focus on Benefits** - How does this solve customer problems?\n4. **Improve Clarity** - Simplify complex concepts\n5. **Add Social Proof** - Include customer testimonials or case studies\n\nWould you like me to suggest changes for any specific section?",
     };
 
     // Check which keyword matches the user input
@@ -146,6 +159,11 @@ export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, aiResponse]);
+        
+        // Check if response contains HTML content changes
+        if (isHTMLContent(dummyResponse) && onProposeChanges) {
+          onProposeChanges(dummyResponse);
+        }
       }, 800);
     }
   };

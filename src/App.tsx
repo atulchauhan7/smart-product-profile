@@ -10,6 +10,9 @@ function App() {
   const [editorWidth, setEditorWidth] = useState(50); // Default 50% width
   const [isDragging, setIsDragging] = useState(false);
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
+  const [editorContent, setEditorContent] = useState("");
+  const [editorRef, setEditorRef] = useState<any>(null);
+  const [proposedChanges, setProposedChanges] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const widthRef = useRef(50);
 
@@ -67,6 +70,18 @@ function App() {
 
   const handleAICollapse = () => {
     setLayoutMode(layoutMode === "ai-expanded" ? "full" : "ai-expanded");
+  };
+
+  const handleApplyChanges = (newContent: string) => {
+    if (editorRef) {
+      editorRef.commands.setContent(newContent);
+      setEditorContent(newContent);
+      setProposedChanges(null);
+    }
+  };
+
+  const handleRejectChanges = () => {
+    setProposedChanges(null);
   };
 
   return (
@@ -136,7 +151,14 @@ function App() {
           }}
         >
           <div className="editor-panel">
-            <TextEditor onCollapse={handleEditorCollapse} />
+            <TextEditor
+              onCollapse={handleEditorCollapse}
+              onContentChange={setEditorContent}
+              onEditorReady={setEditorRef}
+              proposedChanges={proposedChanges}
+              onAcceptChanges={handleApplyChanges}
+              onRejectChanges={handleRejectChanges}
+            />
           </div>
 
           {layoutMode === "full" && (
@@ -151,7 +173,11 @@ function App() {
           )}
 
           <div className="ai-panel">
-            <AIAgent onCollapse={handleAICollapse} />
+            <AIAgent
+              onCollapse={handleAICollapse}
+              editorContent={editorContent}
+              onProposeChanges={setProposedChanges}
+            />
           </div>
         </div>
 

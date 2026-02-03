@@ -1,13 +1,26 @@
-import { useState, FC, ChangeEvent } from "react";
+import { useState, FC, ChangeEvent, useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { DiffViewer } from "./DiffViewer";
 import "../styles/text-editor.css";
 
 interface TextEditorProps {
   onCollapse: () => void;
+  onContentChange?: (content: string) => void;
+  onEditorReady?: (editor: any) => void;
+  proposedChanges?: string | null;
+  onAcceptChanges?: (newContent: string) => void;
+  onRejectChanges?: () => void;
 }
 
-export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
+export const TextEditor: FC<TextEditorProps> = ({
+  onCollapse,
+  onContentChange,
+  onEditorReady,
+  proposedChanges,
+  onAcceptChanges,
+  onRejectChanges,
+}) => {
   const [title, setTitle] = useState("Untitled Product");
   const [, forceUpdate] = useState(0);
 
@@ -30,8 +43,11 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
     onSelectionUpdate: () => {
       forceUpdate((n) => n + 1);
     },
-    onUpdate: () => {
+    onUpdate: ({ editor }) => {
       forceUpdate((n) => n + 1);
+      if (onContentChange) {
+        onContentChange(editor.getHTML());
+      }
     },
     editorProps: {
       attributes: {
@@ -39,6 +55,15 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
       },
     },
   });
+
+  useEffect(() => {
+    if (editor && onEditorReady) {
+      onEditorReady(editor);
+      if (onContentChange) {
+        onContentChange(editor.getHTML());
+      }
+    }
+  }, [editor, onEditorReady, onContentChange]);
 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -215,8 +240,18 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
         </button>
       </div>
       <div className="editor-body">
-        {" "}
-        <EditorContent editor={editor} />
+        {proposedChanges ? (
+          <div className="diff-viewer-container">
+            <DiffViewer
+              originalContent={editor?.getHTML() || ""}
+              newContent={proposedChanges}
+              onAccept={() => onAcceptChanges?.(proposedChanges)}
+              onReject={() => onRejectChanges?.()}
+            />
+          </div>
+        ) : (
+          <EditorContent editor={editor} />
+        )}
       </div>
     </div>
   );
