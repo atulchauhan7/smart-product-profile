@@ -17,7 +17,7 @@ export const AIAgent: FC<AIAgentProps> = ({ onCollapse }) => {
     {
       id: "1",
       role: "assistant",
-      content: " Welcome!",
+      content: " Welcome to smart product profile! How can I assist you today?",
       timestamp: new Date(Date.now() - 300000),
     },
     {
