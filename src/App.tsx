@@ -82,7 +82,7 @@ function App() {
               aria-label="Toggle sidebar"
             >
               <span className="sidebar-logo">
-                <span className="logo-text">Lilly</span>
+                <span className="logo-text"><img src="/src/assets/lilly-black-logo.png" alt="Attach" className="attach-icon" /></span>
                 <span className="logo-subtitle">Smart Product Profile</span>
               </span>
               <span className="toggle-icon">☰</span>
@@ -91,11 +91,11 @@ function App() {
           
           <nav className="sidebar-nav">
             <button className="nav-item active">
-              <span className="nav-icon">📋</span>
+              <span className="nav-icon"><img src="/src/assets/file-text.svg" alt="Attach" className="attach-icon" /></span>
               <span className="nav-label">Product details</span>
             </button>
             <button className="nav-item">
-              <span className="nav-icon">✉️</span>
+              <span className="nav-icon"><img src="/src/assets/users.svg" alt="Attach" className="attach-icon" /></span>
               <span className="nav-label">Invite</span>
             </button>
           </nav>
