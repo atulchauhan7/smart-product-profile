@@ -196,13 +196,8 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
     className="toolbar-icon"
   />
   </button>
-        <button className="toolbar-btn" title="Image" type="button">
-           <img
-    src="/src/assets/file.svg"
-    alt="Bullet list"
-    className="toolbar-icon"
-  /></button>
-        <button className="toolbar-btn" title="File" type="button">  <img
+       
+        <button className="toolbar-btn" title="Image" type="button">  <img
     src="/src/assets/image.svg"
     alt="Bullet list"
     className="toolbar-icon"
