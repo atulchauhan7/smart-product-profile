@@ -126,7 +126,7 @@ export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
         type: "image",
         image: {
           url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
-          alt: "Product preview image",
+          alt: "Product Preview Image",
         },
       }),
 
@@ -134,7 +134,7 @@ export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
         type: "image",
         image: {
           url: "/src/assets/grabill54-gift-9817.gif",
-          alt: "Local GIF preview",
+          alt: "Local GIF Preview",
         },
       }),
 
