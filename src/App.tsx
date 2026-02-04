@@ -10,7 +10,6 @@ function App() {
   const [editorWidth, setEditorWidth] = useState(50); // Default 50% width
   const [isDragging, setIsDragging] = useState(false);
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
-  const [editorRef, setEditorRef] = useState<any>(null);
   const [proposedChanges, setProposedChanges] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const widthRef = useRef(50);
@@ -71,11 +70,8 @@ function App() {
     setLayoutMode(layoutMode === "ai-expanded" ? "full" : "ai-expanded");
   };
 
-  const handleApplyChanges = (newContent: string) => {
-    if (editorRef) {
-      editorRef.commands.setContent(newContent);
-      setProposedChanges(null);
-    }
+  const handleApplyChanges = () => {
+    setProposedChanges(null);
   };
 
   const handleRejectChanges = () => {
@@ -114,19 +110,19 @@ function App() {
             </button>
           </div>
 
-          <nav className="sidebar-nav">
-            <button className="nav-item active">
-              <span className="nav-icon">
+          <nav className="sidebar-nav" >
+            <button  className="nav-item active" onClick={handleEditorCollapse}>
+              <span>
                 <img
                   src="/src/assets/file-text.svg"
                   alt="Product details"
-                  className="attach-icon"
+                  className="product-icon"
                 />
               </span>
               <span className="nav-label">Product details</span>
             </button>
             <button className="nav-item">
-              <span className="nav-icon">
+              <span>
                 <img
                   src="/src/assets/users.svg"
                   alt="Invite"
@@ -151,7 +147,6 @@ function App() {
           <div className="editor-panel">
             <TextEditor
               onCollapse={handleEditorCollapse}
-              onEditorReady={setEditorRef}
               proposedChanges={proposedChanges}
               onAcceptChanges={handleApplyChanges}
               onRejectChanges={handleRejectChanges}
@@ -171,7 +166,6 @@ function App() {
 
           <div className="ai-panel">
             <AIAgent
-              onCollapse={handleAICollapse}
               onProposeChanges={setProposedChanges}
             />
           </div>
@@ -180,25 +174,27 @@ function App() {
         {/* Right Sidebar */}
         <aside className="right-sidebar">
           <div className="sidebar-nav right-nav">
-            <button
+            <button className="nav-item-icon" title="Panel" aria-label="Panel">
+            <img src="/src/assets/panel-right.svg" alt="message"/>
+            </button>
+            <button  className="nav-item-icon" title="message" aria-label="Message">
+            <img src="/src/assets/message.svg" alt="message"/>
+            </button>
+            <button  className="nav-item-icon" title="Lines" aria-label="Lines">
+            <img src="/src/assets/liners.svg" alt="liners"/>
+            </button>
+             <button  className="nav-item-icon" title="Book" aria-label="Book">
+            <img src="/src/assets/lightbulb.svg" alt="book" />
+            </button>
+             <button  className="nav-item-icon" title="Book" aria-label="Book">
+            <img src="/src/assets/book.svg" alt="book" />
+            </button>
+             <button
               className="nav-item-icon"
-              title="Settings"
-              aria-label="Settings"
+              title="Time Doc"
+              aria-label="Time Doc"
             >
-              ⚙️
-            </button>
-            <button className="nav-item-icon" title="Copy" aria-label="Copy">
-              📋
-            </button>
-            <button className="nav-item-icon" title="Share" aria-label="Share">
-              🔗
-            </button>
-            <button
-              className="nav-item-icon"
-              title="More"
-              aria-label="More options"
-            >
-              ⋮
+              <img src="/src/assets/file-clock.svg" alt="clock" className="file-clock" />
             </button>
           </div>
         </aside>

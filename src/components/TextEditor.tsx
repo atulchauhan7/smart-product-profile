@@ -1,27 +1,23 @@
-import { useState, FC, ChangeEvent, useEffect } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import { useState, FC, ChangeEvent } from 'react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 import { DiffViewer } from "./DiffViewer";
-import "../styles/text-editor.css";
-
+import '../styles/text-editor.css';
+ 
 interface TextEditorProps {
   onCollapse: () => void;
-  onContentChange?: (content: string) => void;
-  onEditorReady?: (editor: any) => void;
   proposedChanges?: string | null;
   onAcceptChanges?: (newContent: string) => void;
   onRejectChanges?: () => void;
 }
-
-export const TextEditor: FC<TextEditorProps> = ({
+ 
+export const TextEditor: FC<TextEditorProps> = ({ 
   onCollapse,
-  onContentChange,
-  onEditorReady,
   proposedChanges,
   onAcceptChanges,
   onRejectChanges,
 }) => {
-  const [title, setTitle] = useState("Untitled Product");
+  const [title, setTitle] = useState('Untitled Product');
   const [, forceUpdate] = useState(0);
 
   const initialContent = `<h2>1General Information</h2>
@@ -38,16 +34,15 @@ export const TextEditor: FC<TextEditorProps> = ({
 <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>`;
 
   const editor = useEditor({
-    extensions: [StarterKit],
+   extensions: [
+  StarterKit,
+],
     content: initialContent,
     onSelectionUpdate: () => {
       forceUpdate((n) => n + 1);
     },
-    onUpdate: ({ editor }) => {
+    onUpdate: () => {
       forceUpdate((n) => n + 1);
-      if (onContentChange) {
-        onContentChange(editor.getHTML());
-      }
     },
     editorProps: {
       attributes: {
@@ -55,16 +50,7 @@ export const TextEditor: FC<TextEditorProps> = ({
       },
     },
   });
-
-  useEffect(() => {
-    if (editor && onEditorReady) {
-      onEditorReady(editor);
-      if (onContentChange) {
-        onContentChange(editor.getHTML());
-      }
-    }
-  }, [editor, onEditorReady, onContentChange]);
-
+ 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
@@ -97,7 +83,7 @@ export const TextEditor: FC<TextEditorProps> = ({
         break;
     }
   };
-
+ 
   return (
     <div className="text-editor">
       <div className="editor-header">
@@ -107,7 +93,7 @@ export const TextEditor: FC<TextEditorProps> = ({
             className="editor-title"
             value={title}
             onChange={handleTitleChange}
-            placeholder="Enter product name"
+            placeholder="Enter product name" 
           />
         </div>
         <button
@@ -117,11 +103,7 @@ export const TextEditor: FC<TextEditorProps> = ({
         >
           Submit for review
         </button>
-        <button
-          className="collapse-btn"
-          onClick={onCollapse}
-          title="Collapse editor"
-        >
+        <button className="collapse-btn" onClick={onCollapse} title="Collapse editor">
           ◀
         </button>
       </div>
@@ -199,27 +181,27 @@ export const TextEditor: FC<TextEditorProps> = ({
         </button>
         <button
           className={`toolbar-btn`}
-          onClick={() => toggleFormat("blockquote")}
+          onClick={() => toggleFormat('blockquote')}
           title="Quote"
           type="button"
         >
-          <img
-            src="/src/assets/left-indent.svg"
-            alt="Bullet list"
-            className="toolbar-icon"
-          />
+           <img
+    src="/src/assets/left-indent.svg"
+    alt="Bullet list"
+    className="toolbar-icon"
+  />
         </button>
         <button
           className={`toolbar-btn`}
-          onClick={() => toggleFormat("blockquote")}
+          onClick={() => toggleFormat('blockquote')}
           title="Quote"
           type="button"
         >
-          <img
-            src="/src/assets/right-indent.svg"
-            alt="Bullet list"
-            className="toolbar-icon"
-          />
+           <img
+    src="/src/assets/right-indent.svg"
+    alt="Bullet list"
+    className="toolbar-icon"
+  />
         </button>
         <div className="toolbar-divider"></div>
         <button className="toolbar-btn" title="Link" type="button">

@@ -29,7 +29,7 @@
   border: none;
   background-color: transparent;
   color: #1a1a1a;
-  padding: 8px 12px;
+  padding: 2px;
   outline: none;
   flex: 1;
   font-family: inherit;
@@ -303,6 +303,7 @@
     padding: 6px;
     cursor: pointer;
     border-radius: 4px;
+
   }
 }
 
@@ -312,11 +313,13 @@
   border-color: #3e4042;
 }
 
+
 .toolbar-btn.active {
   background: #e0e7ff;
   border-color: #4e4e5a;
   color: #121114;
 }
+
 
 .toolbar-icon {
   width: 16px;

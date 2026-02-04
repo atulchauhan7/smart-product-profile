@@ -3,7 +3,6 @@ import "../styles/ai-agent.css";
 import { ChatMessage } from "../types";
 
 interface AIAgentProps {
-  onCollapse: () => void;
   onProposeChanges?: (newContent: string) => void;
 }
 
@@ -12,7 +11,6 @@ type ChatMessageWithAttachment = ChatMessage & {
 };
 
 export const AIAgent: FC<AIAgentProps> = ({
-  onCollapse,
   onProposeChanges,
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -49,6 +47,7 @@ export const AIAgent: FC<AIAgentProps> = ({
 
   const [inputValue, setInputValue] = useState("");
   const [confidenceScore] = useState(70);
+  const [showTooltip, setShowTooltip] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -177,26 +176,39 @@ export const AIAgent: FC<AIAgentProps> = ({
     <div className="ai-agent">
       <div className="ai-header">
         <span className="ai-title">Planning Assistant</span>
-        <button
+        {/* <button
           className="collapse-btn"
           onClick={onCollapse}
           title="Collapse AI panel"
         >
           ▶
-        </button>
+        </button> */}
       </div>
 
       <div className="confidence-section">
         <div className="confidence-label">
-          <span>Confidence score</span>{" "}
-          <span className="info-icon">
+          <span>Confidence score</span>
+{" "}
+          <span className="info-icon-wrapper">
+      <button 
+        className="info-button"
+        onClick={() => setShowTooltip(!showTooltip)}
+        onBlur={() => setShowTooltip(false)}
+      >
+        
             <img
               src="./src/assets/info.svg"
-              alt="Attach"
+              alt="Info"
               className="info-icon"
             />
-          </span>
-          <span className="score-number">{confidenceScore}%</span>
+          
+      </button>
+      {showTooltip && (
+        <span className="tooltip">
+          An estimation of how much info you've provided. You must have a score of 65% or higher to submit
+        </span>
+      )}
+    </span>          <span className="score-number">{confidenceScore}%</span>
         </div>
         <div className="progress-bar">
           <div
