@@ -53,6 +53,21 @@ export const TextEditor: FC<TextEditorProps> = ({
     setTitle(e.target.value);
   };
 
+  const handleAccept = () => {
+    if (editor && proposedChanges) {
+      editor.commands.setContent(proposedChanges);
+      if (onAcceptChanges) {
+        onAcceptChanges(proposedChanges);
+      }
+    }
+  };
+
+  const handleReject = () => {
+    if (onRejectChanges) {
+      onRejectChanges();
+    }
+  };
+
   if (!editor) {
     return null;
   }
@@ -222,8 +237,8 @@ export const TextEditor: FC<TextEditorProps> = ({
             <DiffViewer
               originalContent={editor?.getHTML() || ""}
               newContent={proposedChanges}
-              onAccept={() => onAcceptChanges?.(proposedChanges)}
-              onReject={() => onRejectChanges?.()}
+              onAccept={handleAccept}
+              onReject={handleReject}
             />
           </div>
         ) : (
