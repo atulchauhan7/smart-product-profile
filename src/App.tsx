@@ -10,6 +10,7 @@ function App() {
   const [editorWidth, setEditorWidth] = useState(50); // Default 50% width
   const [isDragging, setIsDragging] = useState(false);
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
+  const [proposedChanges, setProposedChanges] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const widthRef = useRef(50);
 
@@ -69,33 +70,65 @@ function App() {
     setLayoutMode(layoutMode === "ai-expanded" ? "full" : "ai-expanded");
   };
 
+  const handleApplyChanges = () => {
+    setProposedChanges(null);
+  };
+
+  const handleRejectChanges = () => {
+    setProposedChanges(null);
+  };
+
   return (
     <div className="app">
       <div className="main-container" ref={containerRef}>
         {/* Left Sidebar */}
-        <aside className={`left-sidebar ${leftSidebarOpen ? "open" : "collapsed"}`}>
+        <aside
+          className={`left-sidebar ${leftSidebarOpen ? "open" : "collapsed"}`}
+        >
           <div className="sidebar-header">
-           <button 
-  className="sidebar-toggle"
-  onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
-  title={leftSidebarOpen ? "Collapse" : "Expand"}
-  aria-label="Toggle sidebar"
->
-  <span><img src="/src/assets/panel-left.svg" alt="panel" className="panel-left" /></span>
-  <span className="sidebar-logo">
-    <img src="/src/assets/lilly-black-logo.png" alt="lilly" className="lilly-logo" />
-    <span className="logo-text">Smart Product Profile</span>
-  </span>
-</button>
+            <button
+              className="sidebar-toggle"
+              onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
+              title={leftSidebarOpen ? "Collapse" : "Expand"}
+              aria-label="Toggle sidebar"
+            >
+              <span>
+                <img
+                  src="/src/assets/panel-left.svg"
+                  alt="panel"
+                  className="panel-left"
+                />
+              </span>
+              <span className="sidebar-logo">
+                <img
+                  src="/src/assets/lilly-black-logo.png"
+                  alt="lilly"
+                  className="lilly-logo"
+                />
+                <span className="logo-text">Smart Product Profile</span>
+              </span>
+            </button>
           </div>
-          
+
           <nav className="sidebar-nav" >
             <button  className="nav-item active" onClick={handleEditorCollapse}>
-              <span><img src="/src/assets/file-text.svg" alt="Product details" className="product-icon" /></span>
+              <span>
+                <img
+                  src="/src/assets/file-text.svg"
+                  alt="Product details"
+                  className="product-icon"
+                />
+              </span>
               <span className="nav-label">Product details</span>
             </button>
             <button className="nav-item">
-              <span><img src="/src/assets/users.svg" alt="Invite" className="invite-icon" /></span>
+              <span>
+                <img
+                  src="/src/assets/users.svg"
+                  alt="Invite"
+                  className="invite-icon"
+                />
+              </span>
               <span className="nav-label">Invite</span>
             </button>
           </nav>
@@ -112,7 +145,12 @@ function App() {
           }}
         >
           <div className="editor-panel">
-            <TextEditor onCollapse={handleEditorCollapse} />
+            <TextEditor
+              onCollapse={handleEditorCollapse}
+              proposedChanges={proposedChanges}
+              onAcceptChanges={handleApplyChanges}
+              onRejectChanges={handleRejectChanges}
+            />
           </div>
 
           {layoutMode === "full" && (
@@ -127,7 +165,9 @@ function App() {
           )}
 
           <div className="ai-panel">
-            <AIAgent onCollapse={handleAICollapse} />
+            <AIAgent
+              onProposeChanges={setProposedChanges}
+            />
           </div>
         </div>
 
@@ -149,7 +189,11 @@ function App() {
              <button  className="nav-item-icon" title="Book" aria-label="Book">
             <img src="/src/assets/book.svg" alt="book" />
             </button>
-             <button className="nav-item-icon" title="Time Doc" aria-label="Time Doc">
+             <button
+              className="nav-item-icon"
+              title="Time Doc"
+              aria-label="Time Doc"
+            >
               <img src="/src/assets/file-clock.svg" alt="clock" className="file-clock" />
             </button>
           </div>

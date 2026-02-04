@@ -346,6 +346,18 @@
   padding: 12px;
 }
 
+.diff-viewer-container {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.diff-viewer-container .diff-viewer {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  height: 100%;
+}
+
 .editor-content {
   min-height: 100%;
   outline: none;

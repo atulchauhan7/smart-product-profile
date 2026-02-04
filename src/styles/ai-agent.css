@@ -60,7 +60,6 @@
   color: #1a1a1a;
   margin-bottom: 12px;
 }
-
 .info-icon-wrapper {
   position: relative;
   display: inline-block;
@@ -135,7 +134,6 @@
   margin-left: auto;
   color: #1a1a1a;
   font-weight: 600;
-
 }
 
 .progress-bar {
@@ -196,7 +194,8 @@
 }
 
 .message-content {
-  padding: 12px 14px;
+  position: relative;
+  padding: 32px 14px 12px 14px;
   border-radius: 12px;
   font-size: 14px;
   line-height: 1.6;
@@ -205,18 +204,61 @@
   white-space: pre-wrap;
 }
 
+.message-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #1a1a1a;
+  font-size: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.message-content:hover .message-copy-btn {
+  opacity: 1;
+}
+
+.message-copy-btn:hover {
+  background-color: rgba(240, 240, 240, 0.95);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.message-copy-btn:active {
+  transform: scale(0.95);
+}
+
+.message-copy-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.copy-text {
+  font-weight: 500;
+  color: #4caf50;
+}
+
 .message.user .message-content {
-  background: #dddce4;
-  color: #111010;
+  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  color: #ffffff;
   border-bottom-right-radius: 2px;
+  box-shadow: 0 3px 10px rgba(211, 47, 47, 0.25);
 }
 
 .message.assistant .message-content {
-  /* background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%); */
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
   color: #1a1a1a;
-  /* border: 1px solid #e0e0e0; */
-  /* border-bottom-left-radius: 2px; */
-  /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); */
+  border: 1px solid #e0e0e0;
+  border-bottom-left-radius: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .message-timestamp {
@@ -409,7 +451,6 @@
 
   .confidence-section {
     padding: 14px;
-
   }
 
   .messages {
