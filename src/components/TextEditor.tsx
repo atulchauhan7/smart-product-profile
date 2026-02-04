@@ -5,14 +5,12 @@ import { DiffViewer } from "./DiffViewer";
 import '../styles/text-editor.css';
  
 interface TextEditorProps {
-  onCollapse: () => void;
   proposedChanges?: string | null;
   onAcceptChanges?: (newContent: string) => void;
   onRejectChanges?: () => void;
 }
  
 export const TextEditor: FC<TextEditorProps> = ({ 
-  onCollapse,
   proposedChanges,
   onAcceptChanges,
   onRejectChanges,
@@ -102,9 +100,6 @@ export const TextEditor: FC<TextEditorProps> = ({
           title="Submit for review"
         >
           Submit for review
-        </button>
-        <button className="collapse-btn" onClick={onCollapse} title="Collapse editor">
-          ◀
         </button>
       </div>
 
