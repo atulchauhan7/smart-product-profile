@@ -77,7 +77,7 @@ body {
 }
 
 .left-sidebar {
-  width: 250px;
+  width: 200px;
   background-color: #ffffff;
   border-right: 1px solid #e5e5e5;
   display: flex;
@@ -381,7 +381,7 @@ body {
   }
 
   .left-sidebar {
-    width: 180px;
+    width: 200px;
   }
 
   .nav-item {
