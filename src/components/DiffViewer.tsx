@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useMemo, useState } from "react";
 import "../styles/diff-viewer.css";
 
 export interface DiffLine {
@@ -14,12 +14,57 @@ interface DiffViewerProps {
   onReject: () => void;
 }
 
+// Simple character-level diff for inline highlighting
+const getCharacterDiff = (oldText: string, newText: string) => {
+  if (oldText === newText) {
+    return { oldParts: [{ text: oldText, changed: false }], newParts: [{ text: newText, changed: false }] };
+  }
+
+  const oldLen = oldText.length;
+  const newLen = newText.length;
+  
+  // Find common prefix
+  let prefix = 0;
+  while (prefix < oldLen && prefix < newLen && oldText[prefix] === newText[prefix]) {
+    prefix++;
+  }
+
+  // Find common suffix
+  let suffix = 0;
+  while (
+    suffix < oldLen - prefix &&
+    suffix < newLen - prefix &&
+    oldText[oldLen - 1 - suffix] === newText[newLen - 1 - suffix]
+  ) {
+    suffix++;
+  }
+
+  const oldChanged = oldText.substring(prefix, oldLen - suffix);
+  const newChanged = newText.substring(prefix, newLen - suffix);
+
+  const oldParts = [
+    { text: oldText.substring(0, prefix), changed: false },
+    { text: oldChanged, changed: true },
+    { text: oldText.substring(oldLen - suffix), changed: false },
+  ].filter(p => p.text.length > 0);
+
+  const newParts = [
+    { text: newText.substring(0, prefix), changed: false },
+    { text: newChanged, changed: true },
+    { text: newText.substring(newLen - suffix), changed: false },
+  ].filter(p => p.text.length > 0);
+
+  return { oldParts, newParts };
+};
+
 export const DiffViewer: FC<DiffViewerProps> = ({
   originalContent,
   newContent,
   onAccept,
   onReject,
 }) => {
+  const [viewMode, setViewMode] = useState<"diff" | "full">("diff");
+
   const generateDiffLines = (): DiffLine[] => {
     // Normalize HTML by adding newlines after closing tags
     const normalizeHTML = (html: string): string => {
@@ -164,7 +209,8 @@ export const DiffViewer: FC<DiffViewerProps> = ({
     return finalLines;
   };
 
-  const diffLines = generateDiffLines();
+  // Memoize the expensive diff calculation
+  const diffLines = useMemo(() => generateDiffLines(), [originalContent, newContent]);
   const addedCount = diffLines.filter((d) => d.type === "add").length;
   const removedCount = diffLines.filter((d) => d.type === "remove").length;
 
@@ -198,6 +244,9 @@ export const DiffViewer: FC<DiffViewerProps> = ({
         const isPaired = nextLine && nextLine.type === "add";
 
         if (isPaired) {
+          // Calculate character-level diff for inline highlighting
+          const charDiff = getCharacterDiff(line.content, nextLine!.content);
+
           // Render paired remove/add together
           rendered.push(
             <div key={i} className="diff-change-pair">
@@ -209,7 +258,16 @@ export const DiffViewer: FC<DiffViewerProps> = ({
                   <span className="prefix remove">−</span>
                 </div>
                 <div className="diff-line-content">
-                  <div dangerouslySetInnerHTML={{ __html: line.content || " " }} />
+                  <span className="diff-inline">
+                    {charDiff.oldParts.map((part, idx) => (
+                      <span
+                        key={idx}
+                        className={part.changed ? "diff-char-removed" : ""}
+                      >
+                        {part.text}
+                      </span>
+                    ))}
+                  </span>
                 </div>
               </div>
               <div className="diff-line diff-added">
@@ -220,7 +278,16 @@ export const DiffViewer: FC<DiffViewerProps> = ({
                   <span className="prefix add">+</span>
                 </div>
                 <div className="diff-line-content">
-                  <div dangerouslySetInnerHTML={{ __html: nextLine!.content || " " }} />
+                  <span className="diff-inline">
+                    {charDiff.newParts.map((part, idx) => (
+                      <span
+                        key={idx}
+                        className={part.changed ? "diff-char-added" : ""}
+                      >
+                        {part.text}
+                      </span>
+                    ))}
+                  </span>
                 </div>
               </div>
             </div>
@@ -270,10 +337,30 @@ export const DiffViewer: FC<DiffViewerProps> = ({
       <div className="diff-header">
         <div className="diff-stats">
           <span className="diff-title">Changes Preview</span>
-          <span className="diff-count added">+{addedCount} added</span>
-          <span className="diff-count removed">-{removedCount} removed</span>
+          {viewMode === "diff" && (
+            <>
+              <span className="diff-count added">+{addedCount} added</span>
+              <span className="diff-count removed">-{removedCount} removed</span>
+            </>
+          )}
         </div>
         <div className="diff-actions">
+          <div className="view-mode-toggle">
+            <button
+              className={`toggle-btn ${viewMode === "diff" ? "active" : ""}`}
+              onClick={() => setViewMode("diff")}
+              title="Show only changes"
+            >
+              Changes
+            </button>
+            <button
+              className={`toggle-btn ${viewMode === "full" ? "active" : ""}`}
+              onClick={() => setViewMode("full")}
+              title="Show full original content"
+            >
+              Full View
+            </button>
+          </div>
           <button
             className="diff-btn reject-btn"
             onClick={onReject}
@@ -292,7 +379,13 @@ export const DiffViewer: FC<DiffViewerProps> = ({
       </div>
 
       <div className="diff-content">
-        {renderDiffLines()}
+        {viewMode === "diff" ? (
+          renderDiffLines()
+        ) : (
+          <div className="full-view-content">
+            <div dangerouslySetInnerHTML={{ __html: originalContent }} />
+          </div>
+        )}
       </div>
     </div>
   );
