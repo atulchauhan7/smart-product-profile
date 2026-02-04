@@ -13,7 +13,6 @@ type ChatMessageWithAttachment = ChatMessage & {
 export const AIAgent: FC<AIAgentProps> = ({
   onProposeChanges,
 }) => {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
   const [messages, setMessages] = useState<ChatMessageWithAttachment[]>([
@@ -46,6 +45,7 @@ export const AIAgent: FC<AIAgentProps> = ({
   ]);
 
   const [inputValue, setInputValue] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [confidenceScore] = useState(70);
   const [showTooltip, setShowTooltip] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -54,6 +54,16 @@ export const AIAgent: FC<AIAgentProps> = ({
   const LINE_HEIGHT = 24;
   const MAX_LINES = 5;
   const MAX_HEIGHT = LINE_HEIGHT * MAX_LINES;
+
+  const MAX_FILES = 3;
+
+const addFiles = (files: File[]) => {
+  setSelectedFiles((prev) => {
+    const merged = [...prev, ...files];
+    return merged.slice(0, MAX_FILES);
+  });
+};
+
 
   const autoResizeTextarea = () => {
     const textarea = textareaRef.current;
@@ -172,6 +182,17 @@ export const AIAgent: FC<AIAgentProps> = ({
     }
   };
 
+ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+  const files = Array.from(e.clipboardData.files || []);
+
+  if (files.length > 0) {
+    e.preventDefault(); 
+    addFiles(files);
+  }
+};
+
+
+
   return (
     <div className="ai-agent">
       <div className="ai-header">
@@ -269,17 +290,18 @@ export const AIAgent: FC<AIAgentProps> = ({
       <div className="input-section">
         <div className="input-container">
           <textarea
-            ref={textareaRef}
-            value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              autoResizeTextarea();
-            }}
-            onKeyDown={handleKeyPress}
-            placeholder="How can I help?"
-            rows={1}
-            className="chat-input resize-none overflow-hidden max-h-[96px] leading-6"
-          />
+  ref={textareaRef}
+  value={inputValue}
+  onChange={(e) => {
+    setInputValue(e.target.value);
+    autoResizeTextarea();
+  }}
+  onKeyDown={handleKeyPress}
+  onPaste={handlePaste}
+  placeholder="How can I help?"
+  rows={1}
+  className="chat-input resize-none overflow-hidden max-h-[96px] leading-6"
+/>
           <div className="input-actions">
             <label className="upload-btn">
               <img
@@ -287,50 +309,48 @@ export const AIAgent: FC<AIAgentProps> = ({
                 alt="Attach"
                 className="attach-icon"
               />
-              <input
-                type="file"
-                hidden
-                multiple
-                accept=".doc,.docx,.pdf,.txt"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || []);
-                  setSelectedFiles((prev) => {
-                    const merged = [...prev, ...files];
-                    return merged.slice(0, 3);
-                  });
-                }}
-              />
+             <input
+  type="file"
+  hidden
+  multiple
+  accept=".doc,.docx,.pdf,.txt,.png,.jpg,.jpeg"
+  onChange={(e) => {
+    const files = Array.from(e.target.files || []);
+    addFiles(files);
+  }}
+/>
+
             </label>
-            <button
-              className="send-btn"
-              onClick={handleSendMessage}
-              disabled={!inputValue.trim()}
-              title="Send message"
-            >
-              ↑
-            </button>
+           <button
+  className="send-btn"
+  onClick={handleSendMessage}
+  disabled={!inputValue.trim() && selectedFiles.length === 0}
+>
+  ↑
+</button>
+
           </div>
         </div>
         {selectedFiles.length > 0 && (
-          <div className="selected-files">
-            {selectedFiles.map((file, index) => (
-              <div key={index} className="selected-file">
-                {file.name}
-                <button
-                  className="remove-file-btn"
-                  title="Remove file"
-                  onClick={() =>
-                    setSelectedFiles((prev) =>
-                      prev.filter((_, i) => i !== index),
-                    )
-                  }
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+  <div className="selected-files">
+    {selectedFiles.map((file, index) => (
+      <div key={index} className="selected-file">
+        {file.name}
+        <button
+          className="remove-file-btn"
+          onClick={() =>
+            setSelectedFiles((prev) =>
+              prev.filter((_, i) => i !== index)
+            )
+          }
+        >
+          ✕
+        </button>
+      </div>
+    ))}
+  </div>
+)}
+
         <div className="ai-disclaimer">
           AI-generated responses may contain errors. Always verify accuracy.
         </div>
