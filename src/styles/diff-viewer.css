@@ -103,11 +103,31 @@
   align-items: flex-start;
   padding: 0;
   line-height: 1.6;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.diff-change-pair {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.diff-removed {
+  background-color: #ffebee;
+  border-left: 3px solid #f44336;
+  width: 100%;
+}
+
+.diff-added {
+  background-color: #f1f8e9;
+  border-left: 3px solid #4caf50;
+  width: 100%;
 }
 
 .diff-line-context {
   background-color: #ffffff;
+  border-left: 3px solid transparent;
 }
 
 .diff-line-add {

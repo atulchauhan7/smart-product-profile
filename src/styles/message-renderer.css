@@ -4,6 +4,43 @@
   line-height: 1.6;
 }
 
+.message-html-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-left: 4px solid #d32f2f;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.html-notice-icon {
+  flex-shrink: 0;
+  color: #d32f2f;
+  display: flex;
+  align-items: center;
+}
+
+.html-notice-text {
+  flex: 1;
+}
+
+.html-notice-text strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.html-notice-text p {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
 .message-change {
   display: flex;
   flex-direction: column;
