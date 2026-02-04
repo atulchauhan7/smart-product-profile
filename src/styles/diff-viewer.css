@@ -6,7 +6,7 @@
   border-radius: 8px;
   overflow: hidden;
   margin: 12px 0;
-  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-family: inherit;
   font-size: 13px;
 }
 
@@ -195,7 +195,7 @@
   white-space: pre-wrap;
   word-break: break-word;
   color: #1a1a1a;
-  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-family: inherit;
   user-select: text;
   -webkit-user-select: text;
 }

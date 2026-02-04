@@ -129,7 +129,7 @@ function App() {
                   className="invite-icon"
                 />
               </span>
-              <span className="nav-label">Invite</span>
+              <span className="nav-label">Collaborators</span>
             </button>
           </nav>
         </aside>
@@ -159,7 +159,6 @@ function App() {
               onMouseDown={() => setIsDragging(true)}
             >
               <div className="divider-buttons">
-                {/* Reserved for future buttons */}
               </div>
             </div>
           )}
