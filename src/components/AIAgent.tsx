@@ -1,5 +1,7 @@
 import { useState, FC, KeyboardEvent, useRef, useEffect } from "react";
+import { MessageRenderer } from "./MessageRenderer";
 import "../styles/ai-agent.css";
+import "../styles/message-renderer.css";
 import { ChatMessage } from "../types";
 
 interface AIAgentProps {
@@ -10,9 +12,7 @@ type ChatMessageWithAttachment = ChatMessage & {
   attachments?: File[];
 };
 
-export const AIAgent: FC<AIAgentProps> = ({
-  onProposeChanges,
-}) => {
+export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
@@ -20,7 +20,8 @@ export const AIAgent: FC<AIAgentProps> = ({
     {
       id: "1",
       role: "assistant",
-      content: " Welcome to smart product profile! How can I assist you today?",
+      content:
+        "👋 **Welcome to Smart Product Profile!**\\n\\nHow can I assist you today?\\n\\nTry asking me to:\\n- `improve` your content\\n- Show `feature` suggestions\\n- `change` or `rewrite` text\\n- Display an `image` preview",
       timestamp: new Date(Date.now() - 300000),
     },
     {
@@ -33,7 +34,7 @@ export const AIAgent: FC<AIAgentProps> = ({
       id: "3",
       role: "assistant",
       content:
-        "No. This tool will only be for Lilly employees and use their existing Lilly accounts to log in.",
+        "**No.** This tool will only be for *Lilly employees* and use their existing Lilly accounts to log in.\\n\\n✅ Secure authentication\\n✅ Internal use only",
       timestamp: new Date(Date.now() - 60000),
     },
     {
@@ -84,20 +85,58 @@ export const AIAgent: FC<AIAgentProps> = ({
     return content.trim().startsWith("<") && content.includes("</");
   };
 
+  const isImageContent = (content: string): boolean => {
+    try {
+      const trimmed = content.trim();
+      if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+        const parsed = JSON.parse(trimmed);
+        return parsed && parsed.type === 'image';
+      }
+    } catch {
+      return false;
+    }
+    return false;
+  };
+
   const generateDummyResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();
 
     const dummyResponses: { [key: string]: string } = {
       improve:
-        "Great question! Here are some suggestions to improve your product description:\n\n1. Add specific benefits and use cases\n2. Include quantifiable metrics or data\n3. Highlight what makes your product unique\n4. Use clear, concise language\n5. Consider adding customer testimonials\n\nWould you like me to expand on any of these suggestions?",
+        "Great question! Here are some suggestions to **improve** your product description:\n\n1. Add specific benefits and use cases\n2. Include quantifiable metrics or data\n3. Highlight what makes your product unique\n4. Use `clear, concise` language\n5. Consider adding customer testimonials\n\n> Would you like me to expand on any of these suggestions?",
 
       feature:
-        "Your product description should clearly highlight:\n\n• Core features and functionality\n• Key benefits for the user\n• Target audience\n• Pricing or value proposition\n• How it solves customer problems\n\nMake sure each feature is explained in terms of user benefits!",
+        "Your product description should clearly highlight:\n\n- **Core features** and functionality\n- **Key benefits** for the user\n- **Target audience**\n- **Pricing** or value proposition\n- How it **solves customer problems**\n\nMake sure each feature is explained in terms of user benefits!",
 
       tone: 'Based on your current content, I\'d recommend:\n\n• Use a professional yet approachable tone\n• Avoid overly technical jargon for general audiences\n• Use active voice (e.g., "Transform your workflow" instead of "Your workflow will be transformed")\n• Be specific about benefits rather than vague claims\n\nThis will make your product more appealing to potential customers.',
 
       grammar:
         "Your content looks good from a grammar perspective! A few tips:\n\n• Keep sentences concise (15-20 words)\n• Use short paragraphs (2-3 sentences)\n• Break up longer sections with bullet points\n• Ensure consistent tense throughout\n• Proofread for typos and formatting\n\nConsistency and clarity are key!",
+
+      change: JSON.stringify({
+        type: "change",
+        change: {
+          old_msg: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          new_msg:
+            "**Lorem ipsum** is a sophisticated placeholder text widely utilized across *graphic design*, publishing, and web development industries.\n\nIt enables designers to create page layouts without being distracted by meaningful content.",
+        },
+      }),
+
+      image: JSON.stringify({
+        type: "image",
+        image: {
+          url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQykzoZeCE0p7LeuyHnLYCdPP2jju9d5PaMeA&s",
+          alt: "Product preview image",
+        },
+      }),
+
+      gif: JSON.stringify({
+        type: "image",
+        image: {
+          url: "/src/assets/grabill54-gift-9817.gif",
+          alt: "Local GIF preview",
+        },
+      }),
 
       rewrite: `<h2>General Information</h2>
 <p>Lorem ipsum is a sophisticated placeholder text widely utilized across graphic design, publishing, and web development industries. It enables designers to create page layouts without being distracted by meaningful content, while effectively demonstrating various typeface fonts.</p>
@@ -156,7 +195,7 @@ export const AIAgent: FC<AIAgentProps> = ({
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, aiResponse]);
-        
+
         // Check if response contains HTML content changes
         if (isHTMLContent(dummyResponse) && onProposeChanges) {
           onProposeChanges(dummyResponse);
@@ -187,28 +226,27 @@ export const AIAgent: FC<AIAgentProps> = ({
 
       <div className="confidence-section">
         <div className="confidence-label">
-          <span>Confidence score</span>
-{" "}
+          <span>Confidence score</span>{" "}
           <span className="info-icon-wrapper">
-      <button 
-        className="info-button"
-        onClick={() => setShowTooltip(!showTooltip)}
-        onBlur={() => setShowTooltip(false)}
-      >
-        
-            <img
-              src="./src/assets/info.svg"
-              alt="Info"
-              className="info-icon"
-            />
-          
-      </button>
-      {showTooltip && (
-        <span className="tooltip">
-          An estimation of how much info you've provided. You must have a score of 65% or higher to submit
-        </span>
-      )}
-    </span>          <span className="score-number">{confidenceScore}%</span>
+            <button
+              className="info-button"
+              onClick={() => setShowTooltip(!showTooltip)}
+              onBlur={() => setShowTooltip(false)}
+            >
+              <img
+                src="./src/assets/info.svg"
+                alt="Info"
+                className="info-icon"
+              />
+            </button>
+            {showTooltip && (
+              <span className="tooltip">
+                An estimation of how much info you've provided. You must have a
+                score of 65% or higher to submit
+              </span>
+            )}
+          </span>{" "}
+          <span className="score-number">{confidenceScore}%</span>
         </div>
         <div className="progress-bar">
           <div
@@ -223,28 +261,37 @@ export const AIAgent: FC<AIAgentProps> = ({
           {messages.map((message) => (
             <div key={message.id} className={`message ${message.role}`}>
               <div className="message-content">
-                <button
-                  className="message-copy-btn"
-                  onClick={() => handleCopyMessage(message.id, message.content)}
-                  title="Copy message"
-                >
-                  {copiedMessageId === message.id ? (
-                    <span className="copy-text">Copied!</span>
-                  ) : (
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                  )}
-                </button>
-                {message.content}
+                {!isImageContent(message.content) && (
+                  <button
+                    className="message-copy-btn"
+                    onClick={() => handleCopyMessage(message.id, message.content)}
+                    title="Copy message"
+                  >
+                    {copiedMessageId === message.id ? (
+                      <span className="copy-text">Copied!</span>
+                    ) : (
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <rect
+                          x="9"
+                          y="9"
+                          width="13"
+                          height="13"
+                          rx="2"
+                          ry="2"
+                        ></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                    )}
+                  </button>
+                )}
+                <MessageRenderer content={message.content} />
                 {message.attachments && message.attachments.length > 0 && (
                   <div className="message-attachments">
                     {message.attachments.map((file, index) => (

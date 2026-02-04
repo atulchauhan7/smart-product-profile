@@ -204,6 +204,10 @@
   white-space: pre-wrap;
 }
 
+.message-content:has(.message-image) {
+  padding: 12px 14px;
+}
+
 .message-copy-btn {
   position: absolute;
   top: 8px;
