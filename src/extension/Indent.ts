@@ -15,7 +15,7 @@ export const Indent = Extension.create({
   addGlobalAttributes() {
     return [
       {
-        types: ['paragraph', 'heading'],
+        types: ['paragraph', 'heading','listItem'],
         attributes: {
           indent: {
             default: 0,
@@ -43,14 +43,37 @@ export const Indent = Extension.create({
         const { from, to } = state.selection
         let tr = state.tr
 
-        state.doc.nodesBetween(from, to, (node, pos) => {
-          if (!node.type.isTextblock) return
+        state.doc.nodesBetween(from, to, (node, pos, parent) => {
+          // ✅ Case 1: list → indent ONLY listItem
+          if (node.type.name === 'listItem') {
+            const indent = (node.attrs.indent || 0) + 1
 
-          const indent = (node.attrs.indent || 0) + 1
-          tr = tr.setNodeMarkup(pos, undefined, {
-            ...node.attrs,
-            indent,
-          })
+            tr = tr.setNodeMarkup(pos, undefined, {
+              ...node.attrs,
+              indent,
+            })
+            return
+          }
+
+          if (
+            node.type.name === 'paragraph' &&
+            parent?.type.name === 'listItem'
+          ) {
+            return
+          }
+
+          // ✅ Normal paragraph / heading
+          if (
+            node.type.name === 'paragraph' ||
+            node.type.name === 'heading'
+          ) {
+            const indent = (node.attrs.indent || 0) + 1
+
+            tr = tr.setNodeMarkup(pos, undefined, {
+              ...node.attrs,
+              indent,
+            })
+          }
         })
 
         if (dispatch) dispatch(tr)
@@ -63,14 +86,35 @@ export const Indent = Extension.create({
         const { from, to } = state.selection
         let tr = state.tr
 
-        state.doc.nodesBetween(from, to, (node, pos) => {
-          if (!node.type.isTextblock) return
+        state.doc.nodesBetween(from, to, (node, pos, parent) => {
+          if (node.type.name === 'listItem') {
+            const indent = Math.max((node.attrs.indent || 0) - 1, 0)
 
-          const indent = Math.max((node.attrs.indent || 0) - 1, 0)
-          tr = tr.setNodeMarkup(pos, undefined, {
-            ...node.attrs,
-            indent,
-          })
+            tr = tr.setNodeMarkup(pos, undefined, {
+              ...node.attrs,
+              indent,
+            })
+            return
+          }
+
+          if (
+            node.type.name === 'paragraph' &&
+            parent?.type.name === 'listItem'
+          ) {
+            return
+          }
+
+          if (
+            node.type.name === 'paragraph' ||
+            node.type.name === 'heading'
+          ) {
+            const indent = Math.max((node.attrs.indent || 0) - 1, 0)
+
+            tr = tr.setNodeMarkup(pos, undefined, {
+              ...node.attrs,
+              indent,
+            })
+          }
         })
 
         if (dispatch) dispatch(tr)
@@ -78,5 +122,6 @@ export const Indent = Extension.create({
       },
   }
 }
+
 
 })
