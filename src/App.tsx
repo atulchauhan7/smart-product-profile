@@ -146,7 +146,6 @@ function App() {
         >
           <div className="editor-panel">
             <TextEditor
-              onCollapse={handleEditorCollapse}
               proposedChanges={proposedChanges}
               onAcceptChanges={handleApplyChanges}
               onRejectChanges={handleRejectChanges}
