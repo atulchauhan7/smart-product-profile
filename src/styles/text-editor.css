@@ -5,7 +5,7 @@
   background-color: #ffffff;
   overflow: hidden;
 }
- 
+
 .editor-header {
   display: flex;
   justify-content: space-between;
@@ -15,33 +15,33 @@
   background-color: #ffffff;
   gap: 16px;
 }
- 
+
 .editor-header-left {
   display: flex;
   align-items: center;
   gap: 12px;
   flex: 1;
 }
- 
+
 .editor-title {
   font-size: 24px;
   font-weight: 600;
   border: none;
   background-color: transparent;
   color: #1a1a1a;
-  padding: 8px 12px;
+  padding: 2px;
   outline: none;
   flex: 1;
   font-family: inherit;
   transition: all 0.3s ease;
 }
- 
+
 .editor-title:focus {
   background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
- 
+
 .edit-icon {
   cursor: pointer;
   font-size: 16px;
@@ -52,12 +52,12 @@
   align-items: center;
   justify-content: center;
 }
- 
+
 .edit-icon:hover {
   background-color: #f0f0f0;
   transform: scale(1.05);
 }
- 
+
 .collapse-btn {
   background-color: transparent;
   border: none;
@@ -68,12 +68,12 @@
   transition: all 0.2s ease;
   color: #666666;
 }
- 
+
 .collapse-btn:hover {
   background-color: #f0f0f0;
   color: #1a1a1a;
 }
- 
+
 .submit-review-btn {
   padding: 8px 16px;
   border: none;
@@ -95,14 +95,14 @@
 .submit-review-btn:active {
   transform: scale(0.98);
 }
- 
+
 .editor-tabs {
   display: flex;
   border-bottom: 1px solid #e0e0e0;
   padding: 0 24px;
   background-color: #ffffff;
 }
- 
+
 .tab-btn {
   padding: 12px 0;
   margin-right: 24px;
@@ -115,16 +115,16 @@
   transition: all 0.2s ease;
   font-weight: 500;
 }
- 
+
 .tab-btn:hover {
   color: #1a1a1a;
 }
- 
+
 .tab-btn.active {
   color: #1a1a1a;
   border-bottom-color: #1a1a1a;
 }
- 
+
 .toolbar {
   display: flex;
   align-items: center;
@@ -134,7 +134,7 @@
   background-color: #ffffff;
   flex-wrap: wrap;
 }
- 
+
 .toolbar-btn {
   padding: 8px 10px;
   border: 1px solid transparent;
@@ -151,26 +151,26 @@
   height: 36px;
   font-weight: 500;
 }
- 
+
 .toolbar-btn:hover {
   background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
   border-color: #d0d0d0;
   transform: translateY(-1px);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
- 
+
 .toolbar-btn:active {
   transform: translateY(0);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
- 
+
 .toolbar-divider {
   width: 1px;
   height: 30px;
   background-color: #e0e0e0;
   margin: 0 4px;
 }
- 
+
 .editor-content {
   flex: 1;
   padding: 24px 24px 40px 24px;
@@ -184,18 +184,18 @@
   background-color: #ffffff;
   transition: all 0.3s ease;
 }
- 
+
 .editor-content:focus {
   background-color: #fafafa;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 }
- 
+
 /* TipTap Editor Styles */
 .ProseMirror {
   outline: none;
   min-height: 100%;
 }
- 
+
 .ProseMirror h1,
 .ProseMirror h2,
 .ProseMirror h3 {
@@ -204,30 +204,30 @@
   margin-top: 1.5em;
   margin-bottom: 0.5em;
 }
- 
+
 .ProseMirror h2 {
   font-size: 18px;
 }
- 
+
 .ProseMirror h3 {
   font-size: 16px;
 }
- 
+
 .ProseMirror p {
   margin: 0.75em 0 0.75em 0;
   padding-bottom: 8px;
 }
- 
+
 .ProseMirror ul,
 .ProseMirror ol {
   padding-left: 24px;
   margin: 0.75em 0;
 }
- 
+
 .ProseMirror li {
   margin: 0.25em 0;
 }
- 
+
 .ProseMirror blockquote {
   border-left: 4px solid #d32f2f;
   padding-left: 16px;
@@ -235,62 +235,62 @@
   color: #666666;
   font-style: italic;
 }
- 
+
 .ProseMirror strong {
   font-weight: 600;
 }
- 
+
 .ProseMirror em {
   font-style: italic;
 }
- 
+
 .ProseMirror u {
   text-decoration: underline;
 }
- 
+
 .editor-content::placeholder {
   color: #999999;
 }
- 
+
 .editor-content::-webkit-scrollbar {
   width: 8px;
 }
- 
+
 .editor-content::-webkit-scrollbar-track {
   background-color: transparent;
 }
- 
+
 .editor-content::-webkit-scrollbar-thumb {
   background-color: #d0d0d0;
   border-radius: 4px;
 }
- 
+
 .editor-content::-webkit-scrollbar-thumb:hover {
   background-color: #b0b0b0;
 }
- 
+
 @media (max-width: 768px) {
   .editor-header {
     padding: 12px 16px;
   }
- 
+
   .editor-title {
     font-size: 20px;
   }
- 
+
   .editor-tabs {
     padding: 0 16px;
   }
- 
+
   .editor-content {
     padding: 16px;
   }
- 
+
   .toolbar {
     padding: 6px 8px;
     gap: 1px;
   }
- 
+
   .toolbar-btn {
     padding: 4px 6px;
     font-size: 12px;
@@ -303,49 +303,49 @@
     padding: 6px;
     cursor: pointer;
     border-radius: 4px;
- 
+
   }
 }
- 
+
 .toolbar-btn.active {
   background-color: #7d7f81;
   color: white;
   border-color: #3e4042;
 }
- 
- 
+
+
 .toolbar-btn.active {
   background: #e0e7ff;
   border-color: #4e4e5a;
   color: #121114;
 }
- 
- 
+
+
 .toolbar-icon {
   width: 16px;
   height: 16px;
 }
- 
+
 .text-editor {
   height: 100vh;
   display: flex;
   flex-direction: column;
 }
- 
+
 .editor-header {
   flex-shrink: 0;
 }
- 
+
 .toolbar {
   flex-shrink: 0;
 }
- 
+
 .editor-body {
   flex: 1;
   overflow-y: auto;
   padding: 12px;
 }
- 
+
 .editor-content {
   min-height: 100%;
   outline: none;

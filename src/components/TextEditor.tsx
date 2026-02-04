@@ -2,12 +2,14 @@ import { useState, FC, ChangeEvent } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import '../styles/text-editor.css';
+import TextAlign from '@tiptap/extension-text-align';
+
  
 interface TextEditorProps {
   onCollapse: () => void;
 }
  
-export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
+export const TextEditor: FC<TextEditorProps> = () => {
   const [title, setTitle] = useState('Untitled Product');
   const [, forceUpdate] = useState(0);
  
@@ -26,7 +28,13 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
 <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>`;
  
   const editor = useEditor({
-    extensions: [StarterKit],
+   extensions: [
+  StarterKit,
+  TextAlign.configure({
+    types: ['heading', 'paragraph'],
+    alignments: ['left', 'center', 'right'],
+  }),
+],
     content: initialContent,
       onSelectionUpdate: () => {
     forceUpdate(n => n + 1);
@@ -40,7 +48,7 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
       }
     }
   });
- 
+
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
@@ -73,7 +81,26 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
         break;
     }
   };
- 
+   const handleIndent = (direction: 'left' | 'right') => {
+    const currentAlign = editor.getAttributes('paragraph').textAlign || 'left';
+    
+    if (direction === 'right') {
+      // Cycle through: left -> center -> right
+      if (currentAlign === 'left' || !currentAlign) {
+        editor.chain().focus().setTextAlign('center').run();
+      } else if (currentAlign === 'center') {
+        editor.chain().focus().setTextAlign('right').run();
+      }
+    } else {
+      // Cycle through: right -> center -> left
+      if (currentAlign === 'right') {
+        editor.chain().focus().setTextAlign('center').run();
+      } else if (currentAlign === 'center') {
+        editor.chain().focus().setTextAlign('left').run();
+      }
+    }
+  };
+
   return (
     <div className="text-editor">
       <div className="editor-header">
@@ -83,15 +110,15 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
             className="editor-title"
             value={title}
             onChange={handleTitleChange}
-            placeholder="Enter product name"
+            placeholder="Enter product name" 
           />
         </div>
         <button className="submit-review-btn" onClick={() => alert('Submit for review clicked')} title="Submit for review">
           Submit for review
         </button>
-        <button className="collapse-btn" onClick={onCollapse} title="Collapse editor">
+        {/* <button className="collapse-btn" onClick={onCollapse} title="Collapse editor">
           ◀
-        </button>
+        </button> */}
       </div>
  
  
@@ -165,25 +192,25 @@ export const TextEditor: FC<TextEditorProps> = ({ onCollapse }) => {
         </button>
           <button
           className={`toolbar-btn`}
-          onClick={() => toggleFormat('blockquote')}
-          title="Quote"
+          onClick={() => handleIndent('left')}
+          title="Decrease indent"
           type="button"
         >
            <img
     src="/src/assets/left-indent.svg"
-    alt="Bullet list"
+    alt="Left indent"
     className="toolbar-icon"
   />
         </button>
         <button
           className={`toolbar-btn`}
-          onClick={() => toggleFormat('blockquote')}
-          title="Quote"
+          onClick={() => handleIndent('right')}
+          title="Increase indent"
           type="button"
         >
            <img
     src="/src/assets/right-indent.svg"
-    alt="Bullet list"
+    alt="Right indent"
     className="toolbar-icon"
   />
         </button>

@@ -89,13 +89,13 @@ function App() {
 </button>
           </div>
           
-          <nav className="sidebar-nav">
-            <button className="nav-item active">
-              <span className="nav-icon"><img src="/src/assets/file-text.svg" alt="Product details" className="attach-icon" /></span>
+          <nav className="sidebar-nav" >
+            <button  className="nav-item active" onClick={handleEditorCollapse}>
+              <span><img src="/src/assets/file-text.svg" alt="Product details" className="product-icon" /></span>
               <span className="nav-label">Product details</span>
             </button>
             <button className="nav-item">
-              <span className="nav-icon"><img src="/src/assets/users.svg" alt="Invite" className="invite-icon" /></span>
+              <span><img src="/src/assets/users.svg" alt="Invite" className="invite-icon" /></span>
               <span className="nav-label">Invite</span>
             </button>
           </nav>
@@ -134,17 +134,23 @@ function App() {
         {/* Right Sidebar */}
         <aside className="right-sidebar">
           <div className="sidebar-nav right-nav">
-            <button className="nav-item-icon" title="Settings" aria-label="Settings">
-              ⚙️
+            <button className="nav-item-icon" title="Panel" aria-label="Panel">
+            <img src="/src/assets/panel-right.svg" alt="message"/>
             </button>
-            <button className="nav-item-icon" title="Copy" aria-label="Copy">
-              📋
+            <button  className="nav-item-icon" title="message" aria-label="Message">
+            <img src="/src/assets/message.svg" alt="message"/>
             </button>
-            <button className="nav-item-icon" title="Share" aria-label="Share">
-              🔗
+            <button  className="nav-item-icon" title="Lines" aria-label="Lines">
+            <img src="/src/assets/liners.svg" alt="liners"/>
             </button>
-            <button className="nav-item-icon" title="More" aria-label="More options">
-              ⋮
+             <button  className="nav-item-icon" title="Book" aria-label="Book">
+            <img src="/src/assets/lightbulb.svg" alt="book" />
+            </button>
+             <button  className="nav-item-icon" title="Book" aria-label="Book">
+            <img src="/src/assets/book.svg" alt="book" />
+            </button>
+             <button className="nav-item-icon" title="Time Doc" aria-label="Time Doc">
+              <img src="/src/assets/file-clock.svg" alt="clock" className="file-clock" />
             </button>
           </div>
         </aside>
