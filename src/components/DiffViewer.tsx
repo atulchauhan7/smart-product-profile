@@ -115,10 +115,7 @@ export const DiffViewer: FC<DiffViewerProps> = ({
 
       <div className="diff-content">
         {diffLines.map((line, index) => (
-          <div
-            key={index}
-            className={`diff-line diff-line-${line.type}`}
-          >
+          <div key={index} className={`diff-line diff-line-${line.type}`}>
             <div className="diff-line-number">
               {line.type === "context" && (
                 <span className="line-num">{line.lineNumber}</span>
@@ -130,10 +127,16 @@ export const DiffViewer: FC<DiffViewerProps> = ({
             </div>
             <div className="diff-line-prefix">
               {line.type === "add" && <span className="prefix add">+</span>}
-              {line.type === "remove" && <span className="prefix remove">-</span>}
-              {line.type === "context" && <span className="prefix context"> </span>}
+              {line.type === "remove" && (
+                <span className="prefix remove">-</span>
+              )}
+              {line.type === "context" && (
+                <span className="prefix context"> </span>
+              )}
             </div>
-            <div className="diff-line-content">{line.content || " "}</div>
+            <div className="diff-line-content">
+              <div dangerouslySetInnerHTML={{ __html: line.content || " " }} />
+            </div>
           </div>
         ))}
       </div>

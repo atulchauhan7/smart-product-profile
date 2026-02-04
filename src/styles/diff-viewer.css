@@ -196,6 +196,8 @@
   word-break: break-word;
   color: #1a1a1a;
   font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .diff-line-add .diff-line-content {
