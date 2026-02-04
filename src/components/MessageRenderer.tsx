@@ -1,6 +1,7 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { ImagePreviewModal } from './ImagePreviewModal';
 
 interface MessageChange {
   old_msg: string;
@@ -24,6 +25,8 @@ interface MessageRendererProps {
 }
 
 export const MessageRenderer: FC<MessageRendererProps> = ({ content }) => {
+  const [previewImage, setPreviewImage] = useState<{ url: string; alt: string } | null>(null);
+
   // Try to parse as JSON first
   const parseMessageData = (text: string): MessageData | null => {
     try {
@@ -87,19 +90,36 @@ export const MessageRenderer: FC<MessageRendererProps> = ({ content }) => {
             : `/src/assets/${imageSrc}`;
         
         return (
-          <div className="message-image">
-            <img
-              src={resolvedSrc}
-              alt={messageData.image?.alt || 'AI generated image'}
-              onError={(e) => {
-                console.error('Image failed to load:', resolvedSrc);
-                (e.target as HTMLImageElement).style.display = 'none';
-              }}
-              onLoad={() => {
-                console.log('Image loaded successfully:', resolvedSrc);
-              }}
-            />
-          </div>
+            <>
+            <div 
+              className="message-image" 
+              onClick={() => setPreviewImage({ 
+                url: resolvedSrc, 
+                alt: messageData.image?.alt || 'AI generated image' 
+              })}
+              style={{ cursor: 'pointer' }}
+              title="Click to view full size"
+            >
+              <img
+                src={resolvedSrc}
+                alt={messageData.image?.alt || 'AI generated image'}
+                onError={(e) => {
+                  console.error('Image failed to load:', resolvedSrc);
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+                onLoad={() => {
+                  console.log('Image loaded successfully:', resolvedSrc);
+                }}
+              />
+            </div>
+            {previewImage && (
+              <ImagePreviewModal
+                imageUrl={previewImage.url}
+                imageAlt={previewImage.alt}
+                onClose={() => setPreviewImage(null)}
+              />
+            )}
+          </>
         );
 
       default:
