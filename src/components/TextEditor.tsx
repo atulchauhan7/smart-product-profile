@@ -3,6 +3,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { DiffViewer } from "./DiffViewer";
 import '../styles/text-editor.css';
+import { Indent } from '../extension/Indent';
  
 interface TextEditorProps {
   proposedChanges?: string | null;
@@ -34,6 +35,7 @@ export const TextEditor: FC<TextEditorProps> = ({
   const editor = useEditor({
    extensions: [
   StarterKit,
+   Indent,
 ],
     content: initialContent,
     onSelectionUpdate: () => {
@@ -174,30 +176,25 @@ export const TextEditor: FC<TextEditorProps> = ({
         >
           ❝
         </button>
-        <button
-          className={`toolbar-btn`}
-          onClick={() => toggleFormat('blockquote')}
-          title="Quote"
-          type="button"
-        >
-           <img
-    src="/src/assets/left-indent.svg"
-    alt="Bullet list"
-    className="toolbar-icon"
-  />
-        </button>
-        <button
-          className={`toolbar-btn`}
-          onClick={() => toggleFormat('blockquote')}
-          title="Quote"
-          type="button"
-        >
-           <img
-    src="/src/assets/right-indent.svg"
-    alt="Bullet list"
-    className="toolbar-icon"
-  />
-        </button>
+      <button
+  className="toolbar-btn"
+  title="Decrease Indent"
+  type="button"
+  onClick={() => editor?.commands.decreaseIndent()}
+>
+  <img src="/src/assets/left-indent.svg" className="toolbar-icon" />
+</button>
+
+<button
+  className="toolbar-btn"
+  title="Increase Indent"
+  type="button"
+  onClick={() => editor?.commands.increaseIndent()}
+>
+  <img src="/src/assets/right-indent.svg" className="toolbar-icon" />
+</button>
+
+
         <div className="toolbar-divider"></div>
         <button className="toolbar-btn" title="Link" type="button">
           <img
