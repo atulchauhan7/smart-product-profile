@@ -263,25 +263,25 @@ export const AIAgent: FC<AIAgentProps> = ({
       <div className="confidence-section">
         <div className="confidence-label">
           <span>Confidence score</span>{" "}
-          <span className="info-icon-wrapper">
-            <button
-              className="info-button"
-              onClick={() => setShowTooltip(!showTooltip)}
-              onBlur={() => setShowTooltip(false)}
-            >
-              <img
-                src="./src/assets/info.svg"
-                alt="Info"
-                className="info-icon"
-              />
-            </button>
-            {showTooltip && (
-              <span className="tooltip">
-                An estimation of how much info you've provided. You must have a
-                score of 80% or higher to submit
-              </span>
-            )}
-          </span>{" "}
+         <span className="info-icon-wrapper">
+  <button
+    className="info-button"
+    onMouseEnter={() => setShowTooltip(true)}
+    onMouseLeave={() => setShowTooltip(false)}
+  >
+    <img
+      src="./src/assets/info.svg"
+      alt="Info"
+      className="info-icon"
+    />
+  </button>
+  {showTooltip && (
+    <span className="tooltip">
+      An estimation of how much info you've provided. You must have a
+      score of 80% or higher to submit
+    </span>
+  )}
+</span>
           <span className="score-number">{confidenceScore}%</span>
         </div>
         <div className="progress-bar">
