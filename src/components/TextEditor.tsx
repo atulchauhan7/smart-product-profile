@@ -3,17 +3,20 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { DiffViewer } from "./DiffViewer";
 import '../styles/text-editor.css';
+import { Indent } from '../extension/Indent';
  
 interface TextEditorProps {
   proposedChanges?: string | null;
   onAcceptChanges?: (newContent: string) => void;
   onRejectChanges?: () => void;
+  confidenceScore: number; 
 }
  
 export const TextEditor: FC<TextEditorProps> = ({ 
   proposedChanges,
   onAcceptChanges,
   onRejectChanges,
+  confidenceScore, 
 }) => {
   const [title, setTitle] = useState('Untitled Product');
   const [, forceUpdate] = useState(0);
@@ -32,9 +35,10 @@ export const TextEditor: FC<TextEditorProps> = ({
 <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>`;
 
   const editor = useEditor({
-   extensions: [
-  StarterKit,
-],
+    extensions: [
+      StarterKit,
+      Indent,
+    ],
     content: initialContent,
     onSelectionUpdate: () => {
       forceUpdate((n) => n + 1);
@@ -68,6 +72,13 @@ export const TextEditor: FC<TextEditorProps> = ({
     }
   };
 
+  const handleSubmitForReview = () => {
+    if (confidenceScore >= 80) {
+      alert("Submit for review clicked");
+     
+    }
+  };
+
   if (!editor) {
     return null;
   }
@@ -96,6 +107,8 @@ export const TextEditor: FC<TextEditorProps> = ({
         break;
     }
   };
+
+  const isSubmitDisabled = confidenceScore < 80;
  
   return (
     <div className="text-editor">
@@ -110,9 +123,10 @@ export const TextEditor: FC<TextEditorProps> = ({
           />
         </div>
         <button
-          className="submit-review-btn"
-          onClick={() => alert("Submit for review clicked")}
-          title="Submit for review"
+          className={`submit-review-btn ${isSubmitDisabled ? 'disabled' : ''}`}
+          onClick={handleSubmitForReview}
+          disabled={isSubmitDisabled}
+          title={isSubmitDisabled ? `Confidence score must be 80% or higher to submit (current: ${confidenceScore}%)` : "Submit for review"}
         >
           Submit for review
         </button>
@@ -190,29 +204,23 @@ export const TextEditor: FC<TextEditorProps> = ({
           ❝
         </button>
         <button
-          className={`toolbar-btn`}
-          onClick={() => toggleFormat('blockquote')}
-          title="Quote"
+          className="toolbar-btn"
+          title="Decrease Indent"
           type="button"
+          onClick={() => editor?.commands.decreaseIndent()}
         >
-           <img
-    src="/src/assets/left-indent.svg"
-    alt="Bullet list"
-    className="toolbar-icon"
-  />
+          <img src="/src/assets/left-indent.svg" className="toolbar-icon" />
         </button>
+
         <button
-          className={`toolbar-btn`}
-          onClick={() => toggleFormat('blockquote')}
-          title="Quote"
+          className="toolbar-btn"
+          title="Increase Indent"
           type="button"
+          onClick={() => editor?.commands.increaseIndent()}
         >
-           <img
-    src="/src/assets/right-indent.svg"
-    alt="Bullet list"
-    className="toolbar-icon"
-  />
+          <img src="/src/assets/right-indent.svg" className="toolbar-icon" />
         </button>
+
         <div className="toolbar-divider"></div>
         <button className="toolbar-btn" title="Link" type="button">
           <img
@@ -223,7 +231,6 @@ export const TextEditor: FC<TextEditorProps> = ({
         </button>
 
         <button className="toolbar-btn" title="Image" type="button">
-          {" "}
           <img
             src="/src/assets/image.svg"
             alt="Bullet list"

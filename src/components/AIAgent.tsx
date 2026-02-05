@@ -6,14 +6,17 @@ import { ChatMessage } from "../types";
 
 interface AIAgentProps {
   onProposeChanges?: (newContent: string) => void;
+  onConfidenceScoreChange?: (score: number) => void; 
 }
 
 type ChatMessageWithAttachment = ChatMessage & {
   attachments?: File[];
 };
 
-export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+export const AIAgent: FC<AIAgentProps> = ({
+  onProposeChanges,
+  onConfidenceScoreChange, 
+}) => {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
   const [messages, setMessages] = useState<ChatMessageWithAttachment[]>([
@@ -47,7 +50,9 @@ export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
   ]);
 
   const [inputValue, setInputValue] = useState("");
-  const [confidenceScore] = useState(70);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  // const [confidenceScore, setConfidenceScore] = useState(70); 
+  const [confidenceScore] = useState(20); 
   const [showTooltip, setShowTooltip] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -55,6 +60,21 @@ export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
   const LINE_HEIGHT = 24;
   const MAX_LINES = 5;
   const MAX_HEIGHT = LINE_HEIGHT * MAX_LINES;
+
+  const MAX_FILES = 3;
+
+  useEffect(() => {
+    if (onConfidenceScoreChange) {
+      onConfidenceScoreChange(confidenceScore);
+    }
+  }, [confidenceScore, onConfidenceScoreChange]);
+
+  const addFiles = (files: File[]) => {
+    setSelectedFiles((prev) => {
+      const merged = [...prev, ...files];
+      return merged.slice(0, MAX_FILES);
+    });
+  };
 
   const autoResizeTextarea = () => {
     const textarea = textareaRef.current;
@@ -161,7 +181,6 @@ export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
         return response;
       }
     }
-    // Return default response if no keyword matches
     return dummyResponses.default;
   };
 
@@ -185,6 +204,10 @@ export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
         }
       }, 0);
       setSelectedFiles([]);
+
+      // Simulate confidence score increase 
+      // setConfidenceScore((prev) => Math.min(prev + 5, 100));
+
       // Simulate AI response with delay
       setTimeout(() => {
         const dummyResponse = generateDummyResponse(userInput);
@@ -211,17 +234,30 @@ export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
     }
   };
 
+ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+  const files = Array.from(e.clipboardData.files || []);
+  
+  const allowedExtensions = ['.docx', '.txt', '.pdf', '.png', '.jpg', '.jpeg'];
+  
+  const validFiles = files.filter((file) => {
+    const fileName = file.name.toLowerCase();
+    return allowedExtensions.some(ext => fileName.endsWith(ext));
+  });
+
+  if (validFiles.length > 0) {
+    e.preventDefault();
+    addFiles(validFiles);
+    
+    if (validFiles.length < files.length) {
+      console.log('Some files were rejected. Only .docx, .txt, .pdf, and image files are allowed.');
+    }
+  }
+};
+
   return (
     <div className="ai-agent">
       <div className="ai-header">
         <span className="ai-title">Planning Assistant</span>
-        {/* <button
-          className="collapse-btn"
-          onClick={onCollapse}
-          title="Collapse AI panel"
-        >
-          ▶
-        </button> */}
       </div>
 
       <div className="confidence-section">
@@ -242,7 +278,7 @@ export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
             {showTooltip && (
               <span className="tooltip">
                 An estimation of how much info you've provided. You must have a
-                score of 65% or higher to submit
+                score of 80% or higher to submit
               </span>
             )}
           </span>{" "}
@@ -323,6 +359,7 @@ export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
               autoResizeTextarea();
             }}
             onKeyDown={handleKeyPress}
+            onPaste={handlePaste}
             placeholder="How can I help?"
             rows={1}
             className="chat-input resize-none overflow-hidden max-h-[96px] leading-6"
@@ -334,25 +371,26 @@ export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
                 alt="Attach"
                 className="attach-icon"
               />
-              <input
-                type="file"
-                hidden
-                multiple
-                accept=".doc,.docx,.pdf,.txt"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || []);
-                  setSelectedFiles((prev) => {
-                    const merged = [...prev, ...files];
-                    return merged.slice(0, 3);
-                  });
-                }}
-              />
+            <input
+  type="file"
+  hidden
+  multiple
+  accept=".docx,.txt,.pdf,.png,.jpg,.jpeg"
+  onChange={(e) => {
+    const files = Array.from(e.target.files || []);
+    const allowedExtensions = ['.docx', '.txt', '.pdf', '.png', '.jpg', '.jpeg'];
+    const validFiles = files.filter((file) => {
+      const fileName = file.name.toLowerCase();
+      return allowedExtensions.some(ext => fileName.endsWith(ext));
+    });
+    addFiles(validFiles);
+  }}
+/>
             </label>
             <button
               className="send-btn"
               onClick={handleSendMessage}
-              disabled={!inputValue.trim()}
-              title="Send message"
+              disabled={!inputValue.trim() && selectedFiles.length === 0}
             >
               ↑
             </button>
@@ -365,10 +403,9 @@ export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
                 {file.name}
                 <button
                   className="remove-file-btn"
-                  title="Remove file"
                   onClick={() =>
                     setSelectedFiles((prev) =>
-                      prev.filter((_, i) => i !== index),
+                      prev.filter((_, i) => i !== index)
                     )
                   }
                 >
@@ -378,6 +415,7 @@ export const AIAgent: FC<AIAgentProps> = ({ onProposeChanges }) => {
             ))}
           </div>
         )}
+
         <div className="ai-disclaimer">
           AI-generated responses may contain errors. Always verify accuracy.
         </div>
