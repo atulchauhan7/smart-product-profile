@@ -7,14 +7,14 @@ type LayoutMode = "full" | "editor-expanded" | "ai-expanded";
 
 function App() {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("full");
-  const [editorWidth, setEditorWidth] = useState(50); // Default 50% width
+  const [editorWidth, setEditorWidth] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [proposedChanges, setProposedChanges] = useState<string | null>(null);
+  const [confidenceScore, setConfidenceScore] = useState(70); // Add confidence score state
   const containerRef = useRef<HTMLDivElement>(null);
   const widthRef = useRef(50);
 
-  // Load saved preference from localStorage
   useEffect(() => {
     const saved = localStorage.getItem("editorWidth");
     if (saved) {
@@ -24,7 +24,6 @@ function App() {
     }
   }, []);
 
-  // Handle dragging the divider - optimized for smooth cursor-following
   useEffect(() => {
     if (!isDragging) return;
 
@@ -34,7 +33,6 @@ function App() {
       const rect = containerRef.current.getBoundingClientRect();
       const newWidth = ((e.clientX - rect.left) / rect.width) * 100;
 
-      // Constrain between 20% and 80%
       if (newWidth >= 20 && newWidth <= 80) {
         widthRef.current = newWidth;
         setEditorWidth(newWidth);
@@ -43,11 +41,9 @@ function App() {
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      // Save preference to localStorage
       localStorage.setItem("editorWidth", widthRef.current.toFixed(2));
     };
 
-    // Attach listeners with high priority
     document.addEventListener("mousemove", handleMouseMove, {
       capture: true,
       passive: true,
@@ -110,8 +106,8 @@ function App() {
             </button>
           </div>
 
-          <nav className="sidebar-nav" >
-            <button  className="nav-item active" onClick={handleEditorCollapse}>
+          <nav className="sidebar-nav">
+            <button className="nav-item active" onClick={handleEditorCollapse}>
               <span>
                 <img
                   src="/src/assets/file-text.svg"
@@ -149,6 +145,7 @@ function App() {
               proposedChanges={proposedChanges}
               onAcceptChanges={handleApplyChanges}
               onRejectChanges={handleRejectChanges}
+              confidenceScore={confidenceScore} // Pass confidence score
             />
           </div>
 
@@ -157,14 +154,14 @@ function App() {
               className={`resize-divider ${isDragging ? "dragging" : ""}`}
               onMouseDown={() => setIsDragging(true)}
             >
-              <div className="divider-buttons">
-              </div>
+              <div className="divider-buttons"></div>
             </div>
           )}
 
           <div className="ai-panel">
             <AIAgent
               onProposeChanges={setProposedChanges}
+              onConfidenceScoreChange={setConfidenceScore} 
             />
           </div>
         </div>
@@ -173,21 +170,21 @@ function App() {
         <aside className="right-sidebar">
           <div className="sidebar-nav right-nav">
             <button className="nav-item-icon" title="Panel" aria-label="Panel">
-            <img src="/src/assets/panel-right.svg" alt="message"/>
+              <img src="/src/assets/panel-right.svg" alt="message" />
             </button>
-            <button  className="nav-item-icon" title="message" aria-label="Message">
-            <img src="/src/assets/message.svg" alt="message"/>
+            <button className="nav-item-icon" title="message" aria-label="Message">
+              <img src="/src/assets/message.svg" alt="message" />
             </button>
-            <button  className="nav-item-icon" title="Lines" aria-label="Lines">
-            <img src="/src/assets/liners.svg" alt="liners"/>
+            <button className="nav-item-icon" title="Lines" aria-label="Lines">
+              <img src="/src/assets/liners.svg" alt="liners" />
             </button>
-             <button  className="nav-item-icon" title="Book" aria-label="Book">
-            <img src="/src/assets/lightbulb.svg" alt="book" />
+            <button className="nav-item-icon" title="Book" aria-label="Book">
+              <img src="/src/assets/lightbulb.svg" alt="book" />
             </button>
-             <button  className="nav-item-icon" title="Book" aria-label="Book">
-            <img src="/src/assets/book.svg" alt="book" />
+            <button className="nav-item-icon" title="Book" aria-label="Book">
+              <img src="/src/assets/book.svg" alt="book" />
             </button>
-             <button
+            <button
               className="nav-item-icon"
               title="Time Doc"
               aria-label="Time Doc"
