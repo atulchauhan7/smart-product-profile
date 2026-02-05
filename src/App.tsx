@@ -101,11 +101,11 @@ function App() {
               <span>
                 <img
                   src="/src/assets/file-text.svg"
-                  alt="Product details"
+                  alt="Product Details"
                   className="product-icon"
                 />
               </span>
-              <span className="nav-label">Product details</span>
+              <span className="nav-label">Product Details</span>
             </button>
             <button className="nav-item">
               <span>
