@@ -437,6 +437,7 @@
 .attach-icon {
   height: 16px;
   filter: grayscale(100%) brightness(0.6);
+  transform: rotate(-42deg);
 }
 
 .info-icon {

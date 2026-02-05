@@ -359,6 +359,7 @@
 .editor-body {
   flex: 1;
   overflow-y: auto;
+  margin-right: 4px
 }
 
 .diff-viewer-container {
