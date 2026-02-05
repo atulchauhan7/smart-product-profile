@@ -234,14 +234,25 @@ export const AIAgent: FC<AIAgentProps> = ({
     }
   };
 
-  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-    const files = Array.from(e.clipboardData.files || []);
+ const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+  const files = Array.from(e.clipboardData.files || []);
+  
+  const allowedExtensions = ['.docx', '.txt', '.pdf', '.png', '.jpg', '.jpeg'];
+  
+  const validFiles = files.filter((file) => {
+    const fileName = file.name.toLowerCase();
+    return allowedExtensions.some(ext => fileName.endsWith(ext));
+  });
 
-    if (files.length > 0) {
-      e.preventDefault();
-      addFiles(files);
+  if (validFiles.length > 0) {
+    e.preventDefault();
+    addFiles(validFiles);
+    
+    if (validFiles.length < files.length) {
+      console.log('Some files were rejected. Only .docx, .txt, .pdf, and image files are allowed.');
     }
-  };
+  }
+};
 
   return (
     <div className="ai-agent">
@@ -360,16 +371,21 @@ export const AIAgent: FC<AIAgentProps> = ({
                 alt="Attach"
                 className="attach-icon"
               />
-              <input
-                type="file"
-                hidden
-                multiple
-                accept=".doc,.docx,.pdf,.txt,.png,.jpg,.jpeg"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || []);
-                  addFiles(files);
-                }}
-              />
+            <input
+  type="file"
+  hidden
+  multiple
+  accept=".docx,.txt,.pdf,.png,.jpg,.jpeg"
+  onChange={(e) => {
+    const files = Array.from(e.target.files || []);
+    const allowedExtensions = ['.docx', '.txt', '.pdf', '.png', '.jpg', '.jpeg'];
+    const validFiles = files.filter((file) => {
+      const fileName = file.name.toLowerCase();
+      return allowedExtensions.some(ext => fileName.endsWith(ext));
+    });
+    addFiles(validFiles);
+  }}
+/>
             </label>
             <button
               className="send-btn"
