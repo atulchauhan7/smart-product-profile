@@ -110,6 +110,91 @@
   transform: scale(0.98);
 }
 
+.case-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.case-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 2px);
+  background: #ffffff;
+  border: 1px solid #d1d1d1;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  min-width: 175px;
+  z-index: 1000;
+}
+
+.case-dropdown-menu button {
+  display: block;
+  width: 100%;
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+  color: #201f1e;
+  line-height: 20px;
+  transition: background-color 0.1s ease;
+  font-weight: 400;
+}
+
+.case-dropdown-menu button:hover {
+  background-color: #f3f2f1;
+}
+
+.case-dropdown-menu button:active {
+  background-color: #edebe9;
+}
+
+.case-dropdown-menu button:focus {
+  outline: none;
+  background-color: #f3f2f1;
+}
+
+.case-dropdown-menu button::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  margin-right: 8px;
+}
+
+.case-dropdown-menu button+button {
+  border-top: 1px solid transparent;
+}
+
+.case-dropdown-menu button:not(:last-child) {
+  margin-bottom: 1px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.case-dropdown-menu {
+  animation: slideDown 0.15s ease-out;
+}
+
+.case-dropdown-menu button:disabled {
+  color: #a19f9d;
+  cursor: not-allowed;
+  background: transparent;
+}
+
+.case-dropdown-menu button:disabled:hover {
+  background: transparent;
+}
+
 .editor-tabs {
   display: flex;
   border-bottom: 1px solid #e0e0e0;
