@@ -24,7 +24,7 @@ export const AIAgent: FC<AIAgentProps> = ({
       id: "1",
       role: "assistant",
       content:
-        "👋 **Welcome to Smart Product Profile!**\\n\\nHow can I assist you today?\\n\\nTry asking me to:\\n- `improve` your content\\n- Show `feature` suggestions\\n- `change` or `rewrite` text\\n- Display an `image` preview",
+        "👋 **Welcome to Smart Product Profile!**\n\nHow can I assist you today?\n\nTry asking me to:\n- `improve` your content\n- Show `feature` suggestions\n- `change` or `rewrite` text\n- Display an `image` preview",
       timestamp: new Date(Date.now() - 300000),
     },
     {
@@ -37,7 +37,7 @@ export const AIAgent: FC<AIAgentProps> = ({
       id: "3",
       role: "assistant",
       content:
-        "**No.** This tool will only be for *Lilly employees* and use their existing Lilly accounts to log in.\\n\\n✅ Secure authentication\\n✅ Internal use only",
+        "**No.** This tool will only be for *Lilly employees* and use their existing Lilly accounts to log in. Secure authentication✅ Internal use only",
       timestamp: new Date(Date.now() - 60000),
     },
     {

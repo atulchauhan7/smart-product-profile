@@ -7,22 +7,13 @@ type LayoutMode = "full" | "editor-expanded" | "ai-expanded";
 
 function App() {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("full");
-  const [editorWidth, setEditorWidth] = useState(50);
+  const [editorWidth, setEditorWidth] = useState(66);
   const [isDragging, setIsDragging] = useState(false);
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
   const [proposedChanges, setProposedChanges] = useState<string | null>(null);
   const [confidenceScore, setConfidenceScore] = useState(70); // Add confidence score state
   const containerRef = useRef<HTMLDivElement>(null);
   const widthRef = useRef(50);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("editorWidth");
-    if (saved) {
-      const width = parseInt(saved);
-      setEditorWidth(width);
-      widthRef.current = width;
-    }
-  }, []);
 
   useEffect(() => {
     if (!isDragging) return;
@@ -41,7 +32,6 @@ function App() {
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      localStorage.setItem("editorWidth", widthRef.current.toFixed(2));
     };
 
     document.addEventListener("mousemove", handleMouseMove, {
