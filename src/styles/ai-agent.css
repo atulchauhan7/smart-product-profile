@@ -205,7 +205,16 @@
 }
 
 .message-content:has(.message-image) {
-  padding: 12px 14px;
+  padding: 0;
+  background: transparent !important;
+  box-shadow: none;
+  max-width: none;
+  width: auto;
+}
+
+.message.assistant .message-content:has(.message-image) {
+  max-width: none;
+  width: auto;
 }
 
 .message-copy-btn {
@@ -302,7 +311,7 @@
 
 .input-container {
   background: #ffffff;
-  border: 1.5px solid #d1d5db;
+  border: 1px solid #d1d5db;
   border-radius: 10px;
   padding: 5px;
   display: flex;

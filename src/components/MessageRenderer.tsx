@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import { ImagePreviewModal } from "./ImagePreviewModal";
 import { isHTMLContent, parseMessageData } from "../utils/helpers";
 import { MARKDOWN_STYLES } from "../utils/markdownStyles";
+import "../styles/message-renderer.css";
 
 interface MessageRendererProps {
   content: string;
@@ -100,6 +101,7 @@ export const MessageRenderer: FC<MessageRendererProps> = ({ content }) => {
               title="Click to view full size"
             >
               <img
+                className="message-image-content"
                 src={resolvedSrc}
                 alt={messageData.image?.alt || "AI generated image"}
                 onError={(e) => {
@@ -133,13 +135,25 @@ export const MessageRenderer: FC<MessageRendererProps> = ({ content }) => {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        h1: ({ node, ...props }) => <h1 style={MARKDOWN_STYLES.h1} {...props} />,
-        h2: ({ node, ...props }) => <h2 style={MARKDOWN_STYLES.h2} {...props} />,
-        h3: ({ node, ...props }) => <h3 style={MARKDOWN_STYLES.h3} {...props} />,
+        h1: ({ node, ...props }) => (
+          <h1 style={MARKDOWN_STYLES.h1} {...props} />
+        ),
+        h2: ({ node, ...props }) => (
+          <h2 style={MARKDOWN_STYLES.h2} {...props} />
+        ),
+        h3: ({ node, ...props }) => (
+          <h3 style={MARKDOWN_STYLES.h3} {...props} />
+        ),
         p: ({ node, ...props }) => <p style={MARKDOWN_STYLES.p} {...props} />,
-        ul: ({ node, ...props }) => <ul style={MARKDOWN_STYLES.ul} {...props} />,
-        ol: ({ node, ...props }) => <ol style={MARKDOWN_STYLES.ol} {...props} />,
-        li: ({ node, ...props }) => <li style={MARKDOWN_STYLES.li} {...props} />,
+        ul: ({ node, ...props }) => (
+          <ul style={MARKDOWN_STYLES.ul} {...props} />
+        ),
+        ol: ({ node, ...props }) => (
+          <ol style={MARKDOWN_STYLES.ol} {...props} />
+        ),
+        li: ({ node, ...props }) => (
+          <li style={MARKDOWN_STYLES.li} {...props} />
+        ),
         code: ({ node, ...props }) => {
           const isInline = !String(props.className || "").includes("language-");
           return isInline ? (
@@ -162,7 +176,9 @@ export const MessageRenderer: FC<MessageRendererProps> = ({ content }) => {
         strong: ({ node, ...props }) => (
           <strong style={MARKDOWN_STYLES.strong} {...props} />
         ),
-        em: ({ node, ...props }) => <em style={{ fontStyle: "italic" }} {...props} />,
+        em: ({ node, ...props }) => (
+          <em style={{ fontStyle: "italic" }} {...props} />
+        ),
       }}
     >
       {content}
