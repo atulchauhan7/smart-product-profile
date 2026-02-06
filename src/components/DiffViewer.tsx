@@ -1,5 +1,6 @@
 import { FC, useMemo, useState } from "react";
 import "../styles/diff-viewer.css";
+import { DIFF_CONTEXT_LINES } from "../constants";
 
 export interface DiffLine {
   type: "add" | "remove" | "context";
@@ -17,15 +18,22 @@ interface DiffViewerProps {
 // Simple character-level diff for inline highlighting
 const getCharacterDiff = (oldText: string, newText: string) => {
   if (oldText === newText) {
-    return { oldParts: [{ text: oldText, changed: false }], newParts: [{ text: newText, changed: false }] };
+    return {
+      oldParts: [{ text: oldText, changed: false }],
+      newParts: [{ text: newText, changed: false }],
+    };
   }
 
   const oldLen = oldText.length;
   const newLen = newText.length;
-  
+
   // Find common prefix
   let prefix = 0;
-  while (prefix < oldLen && prefix < newLen && oldText[prefix] === newText[prefix]) {
+  while (
+    prefix < oldLen &&
+    prefix < newLen &&
+    oldText[prefix] === newText[prefix]
+  ) {
     prefix++;
   }
 
@@ -46,13 +54,13 @@ const getCharacterDiff = (oldText: string, newText: string) => {
     { text: oldText.substring(0, prefix), changed: false },
     { text: oldChanged, changed: true },
     { text: oldText.substring(oldLen - suffix), changed: false },
-  ].filter(p => p.text.length > 0);
+  ].filter((p) => p.text.length > 0);
 
   const newParts = [
     { text: newText.substring(0, prefix), changed: false },
     { text: newChanged, changed: true },
     { text: newText.substring(newLen - suffix), changed: false },
-  ].filter(p => p.text.length > 0);
+  ].filter((p) => p.text.length > 0);
 
   return { oldParts, newParts };
 };
@@ -69,31 +77,28 @@ export const DiffViewer: FC<DiffViewerProps> = ({
     // Normalize HTML by adding newlines after closing tags
     const normalizeHTML = (html: string): string => {
       return html
-        .replace(/></g, '>\n<')  // Add newline between > and <
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => line.length > 0)
-        .join('\n');
+        .replace(/></g, ">\n<") // Add newline between > and <
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0)
+        .join("\n");
     };
-    
+
     const normalizedOriginal = normalizeHTML(originalContent);
     const normalizedNew = normalizeHTML(newContent);
-    
+
     const originalLines = normalizedOriginal.split("\n");
     const newLines = normalizedNew.split("\n");
     const diffLines: DiffLine[] = [];
-    
-    // Log for debugging
-    console.log('=== DIFF VIEWER DEBUG ===');
-    console.log('Original lines count:', originalLines.length);
-    console.log('New lines count:', newLines.length);
-    console.log('First orig line:', JSON.stringify(originalLines[0]));
-    console.log('First new line:', JSON.stringify(newLines[0]));
-    
+
     // Create a simple diff using line matching
     const matched: boolean[] = new Array(newLines.length).fill(false);
-    const diffResult: Array<{type: "add" | "remove" | "context", orig?: number, new?: number}> = [];
-    
+    const diffResult: Array<{
+      type: "add" | "remove" | "context";
+      orig?: number;
+      new?: number;
+    }> = [];
+
     // First pass: find matching lines
     for (let i = 0; i < originalLines.length; i++) {
       let found = false;
@@ -101,39 +106,48 @@ export const DiffViewer: FC<DiffViewerProps> = ({
         if (!matched[j] && originalLines[i] === newLines[j]) {
           // Found a match
           matched[j] = true;
-          diffResult.push({type: "context", orig: i, new: j});
+          diffResult.push({ type: "context", orig: i, new: j });
           found = true;
           break;
         }
       }
       if (!found) {
         // Line was removed
-        diffResult.push({type: "remove", orig: i});
+        diffResult.push({ type: "remove", orig: i });
       }
     }
-    
+
     // Second pass: find lines that were added
     for (let j = 0; j < newLines.length; j++) {
       if (!matched[j]) {
-        diffResult.push({type: "add", new: j});
+        diffResult.push({ type: "add", new: j });
       }
     }
-    
-    console.log('Diff result before sorting:', diffResult.length, 'items');
-    console.log('Added count:', diffResult.filter(d => d.type === 'add').length);
-    console.log('Removed count:', diffResult.filter(d => d.type === 'remove').length);
-    console.log('Context count:', diffResult.filter(d => d.type === 'context').length);
-    
+
     // Sort by position to maintain order
     diffResult.sort((a, b) => {
-      const aPos = a.orig !== undefined ? a.orig : (a.new !== undefined ? a.new + originalLines.length : 0);
-      const bPos = b.orig !== undefined ? b.orig : (b.new !== undefined ? b.new + originalLines.length : 0);
+      const aPos =
+        a.orig !== undefined
+          ? a.orig
+          : a.new !== undefined
+            ? a.new + originalLines.length
+            : 0;
+      const bPos =
+        b.orig !== undefined
+          ? b.orig
+          : b.new !== undefined
+            ? b.new + originalLines.length
+            : 0;
       return aPos - bPos;
     });
-    
+
     // Build diff lines
     for (const item of diffResult) {
-      if (item.type === "context" && item.orig !== undefined && item.new !== undefined) {
+      if (
+        item.type === "context" &&
+        item.orig !== undefined &&
+        item.new !== undefined
+      ) {
         diffLines.push({
           type: "context",
           content: originalLines[item.orig],
@@ -152,7 +166,7 @@ export const DiffViewer: FC<DiffViewerProps> = ({
         });
       }
     }
-    
+
     // Find all change indices
     const changeIndices: number[] = [];
     diffLines.forEach((line, idx) => {
@@ -160,23 +174,24 @@ export const DiffViewer: FC<DiffViewerProps> = ({
         changeIndices.push(idx);
       }
     });
-    
+
     if (changeIndices.length === 0) {
-      return [{
-        type: "context",
-        content: "No changes detected",
-        lineNumber: 0,
-      }];
+      return [
+        {
+          type: "context",
+          content: "No changes detected",
+          lineNumber: 0,
+        },
+      ];
     }
-    
+
     // Group changes into hunks with context
-    const CONTEXT_LINES = 3;
     const hunks: Array<{ start: number; end: number }> = [];
     let hunkStart = changeIndices[0];
     let hunkEnd = changeIndices[0];
-    
+
     for (let i = 1; i < changeIndices.length; i++) {
-      if (changeIndices[i] - hunkEnd <= CONTEXT_LINES * 2 + 1) {
+      if (changeIndices[i] - hunkEnd <= DIFF_CONTEXT_LINES * 2 + 1) {
         hunkEnd = changeIndices[i];
       } else {
         hunks.push({ start: hunkStart, end: hunkEnd });
@@ -185,13 +200,16 @@ export const DiffViewer: FC<DiffViewerProps> = ({
       }
     }
     hunks.push({ start: hunkStart, end: hunkEnd });
-    
+
     // Build final output with context
     const finalLines: DiffLine[] = [];
     hunks.forEach((hunk, hunkIndex) => {
-      const contextStart = Math.max(0, hunk.start - CONTEXT_LINES);
-      const contextEnd = Math.min(diffLines.length - 1, hunk.end + CONTEXT_LINES);
-      
+      const contextStart = Math.max(0, hunk.start - DIFF_CONTEXT_LINES);
+      const contextEnd = Math.min(
+        diffLines.length - 1,
+        hunk.end + DIFF_CONTEXT_LINES,
+      );
+
       // Add separator between hunks
       if (hunkIndex > 0) {
         finalLines.push({
@@ -199,18 +217,21 @@ export const DiffViewer: FC<DiffViewerProps> = ({
           content: "...",
         });
       }
-      
+
       // Add lines with context
       for (let i = contextStart; i <= contextEnd; i++) {
         finalLines.push(diffLines[i]);
       }
     });
-    
+
     return finalLines;
   };
 
   // Memoize the expensive diff calculation
-  const diffLines = useMemo(() => generateDiffLines(), [originalContent, newContent]);
+  const diffLines = useMemo(
+    () => generateDiffLines(),
+    [originalContent, newContent],
+  );
   const addedCount = diffLines.filter((d) => d.type === "add").length;
   const removedCount = diffLines.filter((d) => d.type === "remove").length;
 
@@ -235,7 +256,7 @@ export const DiffViewer: FC<DiffViewerProps> = ({
             <div className="diff-line-content">
               <div dangerouslySetInnerHTML={{ __html: line.content || " " }} />
             </div>
-          </div>
+          </div>,
         );
         i++;
       } else if (line.type === "remove") {
@@ -290,7 +311,7 @@ export const DiffViewer: FC<DiffViewerProps> = ({
                   </span>
                 </div>
               </div>
-            </div>
+            </div>,
           );
           i += 2; // Skip both remove and add
         } else {
@@ -304,9 +325,11 @@ export const DiffViewer: FC<DiffViewerProps> = ({
                 <span className="prefix remove">−</span>
               </div>
               <div className="diff-line-content">
-                <div dangerouslySetInnerHTML={{ __html: line.content || " " }} />
+                <div
+                  dangerouslySetInnerHTML={{ __html: line.content || " " }}
+                />
               </div>
-            </div>
+            </div>,
           );
           i++;
         }
@@ -323,7 +346,7 @@ export const DiffViewer: FC<DiffViewerProps> = ({
             <div className="diff-line-content">
               <div dangerouslySetInnerHTML={{ __html: line.content || " " }} />
             </div>
-          </div>
+          </div>,
         );
         i++;
       }
@@ -340,7 +363,9 @@ export const DiffViewer: FC<DiffViewerProps> = ({
           {viewMode === "diff" && (
             <>
               <span className="diff-count added">+{addedCount} added</span>
-              <span className="diff-count removed">-{removedCount} removed</span>
+              <span className="diff-count removed">
+                -{removedCount} removed
+              </span>
             </>
           )}
         </div>
