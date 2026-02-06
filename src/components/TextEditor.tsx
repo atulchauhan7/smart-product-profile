@@ -1,6 +1,8 @@
-import { useState, FC, ChangeEvent, useCallback } from "react";
+import { useState, FC, ChangeEvent, useCallback, useRef, ClipboardEvent } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import ImageResize from "tiptap-extension-resize-image";
+import TextAlign from "@tiptap/extension-text-align";
 import { DiffViewer } from "./DiffViewer";
 import "../styles/text-editor.css";
 import { Indent } from "../extension/Indent";
@@ -20,6 +22,7 @@ export const TextEditor: FC<TextEditorProps> = ({
   confidenceScore,
 }) => {
   const [title, setTitle] = useState("Untitled Product");
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
 
   const initialContent = `<h2>1General Information</h2>
 <p>Lorem ipsum is a dummy or placeholder text commonly used in graphic design, publishing, and web development. Its purpose is to permit a page layout to be designed, independently of the copy that will subsequently populate it, or to demonstrate various fonts of a typeface without meaningful text that could be distracting.</p>
@@ -35,13 +38,18 @@ export const TextEditor: FC<TextEditorProps> = ({
 <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>`;
 
   const editor = useEditor({
-    extensions: [StarterKit, Indent],
+    extensions: [
+      StarterKit,
+      Indent,
+      ImageResize,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+    ],
     content: initialContent,
     onSelectionUpdate: () => {
-      // Trigger re-render for toolbar state updates
     },
     onUpdate: () => {
-      // Trigger re-render for toolbar state updates
     },
     editorProps: {
       attributes: {
@@ -68,6 +76,90 @@ export const TextEditor: FC<TextEditorProps> = ({
       onRejectChanges();
     }
   }, [onRejectChanges]);
+
+  const handleImageUpload = useCallback(
+    (event: ChangeEvent<HTMLInputElement>): void => {
+      if (!editor) return;
+
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      Array.from(files).forEach((file) => {
+        if (!file.type.startsWith("image/")) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const src = reader.result;
+          if (typeof src === "string") {
+            editor
+              .chain()
+              .focus()
+              .setImage({
+                src,
+                alt: file.name,
+              })
+              .run();
+          }
+        };
+
+        reader.readAsDataURL(file);
+      });
+
+      event.target.value = "";
+    },
+    [editor],
+  );
+
+  const handleImageButtonClick = useCallback((): void => {
+    imageInputRef.current?.click();
+  }, []);
+
+  const handlePaste = useCallback(
+    (event: ClipboardEvent<HTMLDivElement>): void => {
+      if (!editor) return;
+
+      const items = event.clipboardData?.items;
+      if (!items || items.length === 0) {
+        return;
+      }
+
+      const imageFiles: File[] = [];
+      Array.from(items).forEach((item) => {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (file) {
+            imageFiles.push(file);
+          }
+        }
+      });
+
+      if (imageFiles.length === 0) {
+        return;
+      }
+
+      event.preventDefault();
+
+      imageFiles.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const src = reader.result;
+          if (typeof src === "string") {
+            editor
+              .chain()
+              .focus()
+              .setImage({
+                src,
+                alt: file.name,
+              })
+              .run();
+          }
+        };
+
+        reader.readAsDataURL(file);
+      });
+    },
+    [editor],
+  );
 
   const handleSubmitForReview = useCallback((): void => {
     if (confidenceScore >= CONFIDENCE_THRESHOLD) {
@@ -219,14 +311,26 @@ export const TextEditor: FC<TextEditorProps> = ({
             className="toolbar-icon"
           />
         </button>
-
-        <button className="toolbar-btn" title="Image" type="button">
+ <button className="toolbar-btn" title="File" type="button">
           <img
-            src="/src/assets/image.svg"
+            src="/src/assets/file.svg"
             alt="Bullet list"
             className="toolbar-icon"
           />
         </button>
+        <button
+          className="toolbar-btn"
+          title="Insert Image"
+          type="button"
+          onClick={handleImageButtonClick}
+        >
+          <img
+            src="/src/assets/image.svg"
+            alt="Insert image"
+            className="toolbar-icon"
+          />
+        </button>
+
       </div>
       <div className="editor-body">
         {proposedChanges ? (
@@ -239,7 +343,16 @@ export const TextEditor: FC<TextEditorProps> = ({
             />
           </div>
         ) : (
-          <EditorContent editor={editor} />
+          <>
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleImageUpload}
+            />
+            <EditorContent editor={editor} onPaste={handlePaste} />
+          </>
         )}
       </div>
     </div>
