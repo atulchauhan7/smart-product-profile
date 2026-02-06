@@ -44,7 +44,6 @@ export const Indent = Extension.create({
         let tr = state.tr
 
         state.doc.nodesBetween(from, to, (node, pos, parent) => {
-          // ✅ Case 1: list → indent ONLY listItem
           if (node.type.name === 'listItem') {
             const indent = (node.attrs.indent || 0) + 1
 
@@ -61,8 +60,6 @@ export const Indent = Extension.create({
           ) {
             return
           }
-
-          // ✅ Normal paragraph / heading
           if (
             node.type.name === 'paragraph' ||
             node.type.name === 'heading'

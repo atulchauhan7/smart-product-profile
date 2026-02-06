@@ -10,6 +10,7 @@ function App() {
   const [editorWidth, setEditorWidth] = useState(66);
   const [isDragging, setIsDragging] = useState(false);
   const [leftSidebarOpen, setLeftSidebarOpen] = useState(true);
+  const [isAIAgentVisible, setIsAIAgentVisible] = useState(true);
   const [proposedChanges, setProposedChanges] = useState<string | null>(null);
   const [confidenceScore, setConfidenceScore] = useState(70); // Add confidence score state
   const containerRef = useRef<HTMLDivElement>(null);
@@ -97,7 +98,7 @@ function App() {
           </div>
 
           <nav className="sidebar-nav">
-            <button className="nav-item active" onClick={handleEditorCollapse}>
+            <button className="nav-item active" >
               <span>
                 <img
                   src="/src/assets/file-text.svg"
@@ -126,7 +127,9 @@ function App() {
           style={{
             gridTemplateColumns:
               layoutMode === "full" && window.innerWidth > 768
-                ? `${editorWidth}% 1px ${100 - editorWidth}%`
+                ? isAIAgentVisible
+                  ? `${editorWidth}% 1px ${100 - editorWidth}%`
+                  : "100% 0px 0%"
                 : undefined,
           }}
         >
@@ -139,7 +142,7 @@ function App() {
             />
           </div>
 
-          {layoutMode === "full" && (
+          {layoutMode === "full" && isAIAgentVisible && (
             <div
               className={`resize-divider ${isDragging ? "dragging" : ""}`}
               onMouseDown={() => setIsDragging(true)}
@@ -148,12 +151,14 @@ function App() {
             </div>
           )}
 
-          <div className="ai-panel">
-            <AIAgent
-              onProposeChanges={setProposedChanges}
-              onConfidenceScoreChange={setConfidenceScore} 
-            />
-          </div>
+          {(layoutMode !== "full" || isAIAgentVisible) && (
+            <div className="ai-panel">
+              <AIAgent
+                onProposeChanges={setProposedChanges}
+                onConfidenceScoreChange={setConfidenceScore}
+              />
+            </div>
+          )}
         </div>
 
         {/* Right Sidebar */}
@@ -162,8 +167,13 @@ function App() {
             <button className="nav-item-icon" title="Panel" aria-label="Panel">
               <img src="/src/assets/panel-right.svg" alt="message" />
             </button>
-            <button className="nav-item-icon" title="message" aria-label="Message">
-              <img src="/src/assets/message.svg" alt="message" />
+            <button
+              className="nav-item-icon"
+              title="Planning Assistant"
+              aria-label="Message"
+              onClick={() => setIsAIAgentVisible((prev) => !prev)}
+            >
+              <img src="/src/assets/message.svg" alt="planning assistant" />
             </button>
             <button className="nav-item-icon" title="Lines" aria-label="Lines">
               <img src="/src/assets/liners.svg" alt="liners" />

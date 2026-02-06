@@ -267,16 +267,13 @@ export const AIAgent: FC<AIAgentProps> = ({
                 type="file"
                 hidden
                 multiple
-                accept=".docx,.txt,.pdf,.png,.jpg,.jpeg"
+                accept=".docx,.txt,.pdf"
                 onChange={(e) => {
                   const files = Array.from(e.target.files || []);
                   const allowedExtensions = [
                     ".docx",
                     ".txt",
-                    ".pdf",
-                    ".png",
-                    ".jpg",
-                    ".jpeg",
+                    ".pdf"
                   ];
                   const validFiles = files.filter((file) => {
                     const fileName = file.name.toLowerCase();

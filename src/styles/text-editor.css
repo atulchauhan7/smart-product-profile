@@ -99,6 +99,47 @@ img[data-drag-handle] {
   transform: scale(1.05);
 }
 
+.file-card {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 6px;
+  background: #fafafa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 300px;
+}
+
+.file-name {
+  font-weight: 500;
+}
+
+.file-actions button {
+  cursor: pointer;
+}
+
+.file-actions {
+  display: flex;
+  align-items: center;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.download-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.icon-btn:hover .download-icon {
+  opacity: 0.8;
+}
+
+
 .collapse-btn {
   background-color: transparent;
   border: none;
