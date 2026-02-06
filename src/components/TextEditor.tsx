@@ -40,6 +40,7 @@ export const TextEditor: FC<TextEditorProps> = ({
   confidenceScore,
 }) => {
   const [title, setTitle] = useState("Untitled Product");
+  const [, setEditorRenderKey] = useState(0);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
     const [showCaseMenu, setShowCaseMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null)
@@ -69,8 +70,12 @@ export const TextEditor: FC<TextEditorProps> = ({
     ],
     content: initialContent,
     onSelectionUpdate: () => {
+      // force React re-render so toolbar active states update
+      setEditorRenderKey((key) => key + 1);
     },
     onUpdate: () => {
+      // force React re-render so toolbar active states update
+      setEditorRenderKey((key) => key + 1);
     },
     editorProps: {
       attributes: {
