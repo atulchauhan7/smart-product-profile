@@ -435,10 +435,10 @@ const handleInsertLink = (url: string, openInNewTab: boolean) => {
             className="toolbar-icon"
           />
         </button>
- <button className="toolbar-btn" title="File" type="button">
+ <button className="toolbar-btn" title="Insert File" type="button">
           <img
             src="/src/assets/file.svg"
-            alt="Bullet list"
+            alt="insert file"
             className="toolbar-icon"
           />
         </button>
