@@ -1,55 +1,27 @@
-import { useState, FC, ChangeEvent, useRef, useEffect } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Link from '@tiptap/extension-link';
-
-import ImageResize from 'tiptap-extension-resize-image';
+import { useState, FC, ChangeEvent, useCallback } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import { DiffViewer } from "./DiffViewer";
-import LinkModal from "./LinkModal";
-import '../styles/text-editor.css';
-import { Indent } from '../extension/Indent';
- 
+import "../styles/text-editor.css";
+import { Indent } from "../extension/Indent";
+import { CONFIDENCE_THRESHOLD } from "../constants";
+
 interface TextEditorProps {
   proposedChanges?: string | null;
   onAcceptChanges?: (newContent: string) => void;
   onRejectChanges?: () => void;
-  confidenceScore: number; 
+  confidenceScore: number;
 }
- 
-const transformTextCase = (text: string, type: string) => {
-  switch (type) {
-    case 'upper': 
-      return text.toUpperCase();
-    case 'lower':
-      return text.toLowerCase();
-    case 'sentence':
-      return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-    case 'capitalize':
-      return text
-        .toLowerCase()
-        .split(' ')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-    default:
-      return text;
-  }
-};
 
-export const TextEditor: FC<TextEditorProps> = ({ 
+export const TextEditor: FC<TextEditorProps> = ({
   proposedChanges,
   onAcceptChanges,
   onRejectChanges,
-  confidenceScore, 
+  confidenceScore,
 }) => {
-  const [title, setTitle] = useState('Untitled Product');
-  const [, forceUpdate] = useState(0);
+  const [title, setTitle] = useState("Untitled Product");
 
-  const [showCaseMenu, setShowCaseMenu] = useState(false);
-  const [showLinkModal, setShowLinkModal] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const imageInputRef = useRef<HTMLInputElement>(null);
-
-  const initialContent = `<h2>General Information</h2>
+  const initialContent = `<h2>1General Information</h2>
 <p>Lorem ipsum is a dummy or placeholder text commonly used in graphic design, publishing, and web development. Its purpose is to permit a page layout to be designed, independently of the copy that will subsequently populate it, or to demonstrate various fonts of a typeface without meaningful text that could be distracting.</p>
  
 <p>Lorem ipsum is typically a corrupted version of De finibus bonorum et malorum, a 1st-century BC text by the Roman statesman and philosopher Cicero, with words altered, added, and removed to make it nonsensical and improper Latin. The first two words are the truncation of dolorem ipsum ("pain itself").</p>
@@ -63,26 +35,13 @@ export const TextEditor: FC<TextEditorProps> = ({
 <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>`;
 
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Indent,
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'editor-link',
-        },
-      }),
-      ImageResize.configure({
-        inline: true,
-        allowBase64: true,
-      }),
-    ],
+    extensions: [StarterKit, Indent],
     content: initialContent,
     onSelectionUpdate: () => {
-      forceUpdate((n) => n + 1);
+      // Trigger re-render for toolbar state updates
     },
     onUpdate: () => {
-      forceUpdate((n) => n + 1);
+      // Trigger re-render for toolbar state updates
     },
     editorProps: {
       attributes: {
@@ -90,151 +49,38 @@ export const TextEditor: FC<TextEditorProps> = ({
       },
     },
   });
- 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowCaseMenu(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+  const handleTitleChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
+    setTitle(e.target.value);
   }, []);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        if (editor && !editor.state.selection.empty) {
-          setShowLinkModal(true);
-        }
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [editor]);
-
-  const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
-    if (!editor) return;
-    const { from, to, empty } = editor.state.selection;
-    if (empty) return; 
-
-    const selectedText = editor.state.doc.textBetween(from, to, ' ');
-    const newText = transformTextCase(selectedText, type);
-
-    editor.chain().focus().insertContentAt({ from, to }, newText).run();
-    setShowCaseMenu(false);
-  };
-
-  const handleInsertLink = (url: string, openInNewTab: boolean) => {
-    if (!editor) return;
-
-    const { empty } = editor.state.selection;
-    
-    if (empty) {
-      editor
-        .chain()
-        .focus()
-        .insertContent(`<a href="${url}" ${openInNewTab ? 'target="_blank" rel="noopener noreferrer"' : ''}>${url}</a>`)
-        .run();
-    } else {
-      editor
-        .chain()
-        .focus()
-        .setLink({ 
-          href: url,
-          target: openInNewTab ? '_blank' : undefined,
-          rel: openInNewTab ? 'noopener noreferrer' : undefined,
-        })
-        .run();
-    }
-
-    setShowLinkModal(false);
-  };
-
-  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please select a valid image file');
-      return;
-    }
-
-    // Optional: Validate file size (e.g., max 5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-    if (file.size > maxSize) {
-      alert('Image size should be less than 5MB');
-      return;
-    }
-
-    // Convert image to base64
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const base64Image = e.target?.result as string;
-      if (editor && base64Image) {
-        // Insert image at current cursor position
-        editor.chain().focus().setImage({ 
-          src: base64Image,
-          alt: file.name 
-        }).run();
-      }
-    };
-
-    reader.onerror = () => {
-      alert('Failed to read the image file');
-    };
-
-    reader.readAsDataURL(file);
-
-    // Reset input value so the same file can be selected again
-    if (imageInputRef.current) {
-      imageInputRef.current.value = '';
-    }
-  };
-
-  const handleImageButtonClick = () => {
-    imageInputRef.current?.click();
-  };
-
-  const getSelectedText = () => {
-    if (!editor) return '';
-    const { from, to, empty } = editor.state.selection;
-    if (empty) return '';
-    return editor.state.doc.textBetween(from, to, ' ');
-  };
-
-  const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-  };
-
-  const handleAccept = () => {
+  const handleAccept = useCallback((): void => {
     if (editor && proposedChanges) {
       editor.commands.setContent(proposedChanges);
       if (onAcceptChanges) {
         onAcceptChanges(proposedChanges);
       }
     }
-  };
+  }, [editor, proposedChanges, onAcceptChanges]);
 
-  const handleReject = () => {
+  const handleReject = useCallback((): void => {
     if (onRejectChanges) {
       onRejectChanges();
     }
-  };
+  }, [onRejectChanges]);
 
-  const handleSubmitForReview = () => {
-    if (confidenceScore >= 80) {
+  const handleSubmitForReview = useCallback((): void => {
+    if (confidenceScore >= CONFIDENCE_THRESHOLD) {
       alert("Submit for review clicked");
     }
-  };
+  }, [confidenceScore]);
 
   if (!editor) {
     return null;
   }
 
-  const toggleFormat = (format: string) => {
+  const toggleFormat = useCallback((format: string): void => {
+    if (!editor) return;
     switch (format) {
       case "bold":
         editor.chain().focus().toggleBold().run();
@@ -257,10 +103,10 @@ export const TextEditor: FC<TextEditorProps> = ({
       default:
         break;
     }
-  };
+  }, [editor]);
 
-  const isSubmitDisabled = confidenceScore < 80;
- 
+  const isSubmitDisabled = confidenceScore < CONFIDENCE_THRESHOLD;
+
   return (
     <div className="text-editor">
       <div className="editor-header">
@@ -270,14 +116,18 @@ export const TextEditor: FC<TextEditorProps> = ({
             className="editor-title"
             value={title}
             onChange={handleTitleChange}
-            placeholder="Enter product name" 
+            placeholder="Enter product name"
           />
         </div>
         <button
-          className={`submit-review-btn ${isSubmitDisabled ? 'disabled' : ''}`}
+          className={`submit-review-btn ${isSubmitDisabled ? "disabled" : ""}`}
           onClick={handleSubmitForReview}
           disabled={isSubmitDisabled}
-          title={isSubmitDisabled ? `Confidence score must be 80% or higher to submit (current: ${confidenceScore}%)` : "Submit for review"}
+          title={
+            isSubmitDisabled
+              ? `Confidence score must be 80% or higher to submit (current: ${confidenceScore}%)`
+              : "Submit for review"
+          }
         >
           Submit for review
         </button>
@@ -309,25 +159,6 @@ export const TextEditor: FC<TextEditorProps> = ({
         >
           <u>U</u>
         </button>
-        <div className="case-dropdown-wrapper" ref={menuRef} style={{ position: 'relative', display: 'inline-block' }}>
-          <button
-            className={`toolbar-btn ${showCaseMenu ? "active" : ""}`}
-            onClick={() => setShowCaseMenu(!showCaseMenu)}
-            title="Change case"
-            type="button"
-          >
-            <span style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>Aa</span>
-          </button>
-
-          {showCaseMenu && (
-            <div className="case-dropdown-menu">
-              <button onClick={() => applyCase('sentence')}>Sentence case</button>
-              <button onClick={() => applyCase('lower')}>lower case</button>
-              <button onClick={() => applyCase('upper')}>UPPER CASE</button>
-              <button onClick={() => applyCase('capitalize')}>Capitalize Each Word</button>
-            </div>
-          )}
-        </div>
         <div className="toolbar-divider"></div>
         <button
           className={`toolbar-btn ${editor?.isActive("bulletList") ? "active" : ""}`}
@@ -368,7 +199,7 @@ export const TextEditor: FC<TextEditorProps> = ({
           type="button"
           onClick={() => editor?.commands.decreaseIndent()}
         >
-          <img src="/src/assets/left-indent.svg" className="toolbar-icon" alt="Decrease indent" />
+          <img src="/src/assets/left-indent.svg" className="toolbar-icon" />
         </button>
 
         <button
@@ -377,49 +208,26 @@ export const TextEditor: FC<TextEditorProps> = ({
           type="button"
           onClick={() => editor?.commands.increaseIndent()}
         >
-          <img src="/src/assets/right-indent.svg" className="toolbar-icon" alt="Increase indent" />
+          <img src="/src/assets/right-indent.svg" className="toolbar-icon" />
         </button>
 
         <div className="toolbar-divider"></div>
-       
-        <button 
-          className={`toolbar-btn ${editor?.isActive("link") ? "active" : ""}`}
-          onClick={() => setShowLinkModal(true)}
-          title="Insert Link"
-          type="button"
-        >
+        <button className="toolbar-btn" title="Link" type="button">
           <img
             src="/src/assets/link-building.svg"
-            alt="hyperlink"
+            alt="Bullet list"
             className="toolbar-icon"
           />
         </button>
-        <button
-          className="toolbar-btn"
-          title="Insert File"
-          type="button"
-        >
-          <img src="/src/assets/file.svg" className="toolbar-icon" alt="Insert file" />
-        </button>
-        <button
-          className="toolbar-btn"
-          title="Insert Image"
-          type="button"
-          onClick={handleImageButtonClick}
-        >
-          <img src="/src/assets/image.svg" className="toolbar-icon" alt="Insert image" />
+
+        <button className="toolbar-btn" title="Image" type="button">
+          <img
+            src="/src/assets/image.svg"
+            alt="Bullet list"
+            className="toolbar-icon"
+          />
         </button>
       </div>
-      
-      {/* Hidden file input for image upload */}
-      <input
-        ref={imageInputRef}
-        type="file"
-        accept="image/*"
-        style={{ display: 'none' }}
-        onChange={handleImageUpload}
-      />
-
       <div className="editor-body">
         {proposedChanges ? (
           <div className="diff-viewer-container">
@@ -434,13 +242,6 @@ export const TextEditor: FC<TextEditorProps> = ({
           <EditorContent editor={editor} />
         )}
       </div>
-
-      <LinkModal
-        isOpen={showLinkModal}
-        onClose={() => setShowLinkModal(false)}
-        onInsert={handleInsertLink}
-        selectedText={getSelectedText()}
-      />
     </div>
   );
 };
