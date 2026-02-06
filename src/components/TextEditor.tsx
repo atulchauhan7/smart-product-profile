@@ -1,6 +1,7 @@
 import { useState, FC, ChangeEvent, useCallback, useRef, ClipboardEvent } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
 import ImageResize from "tiptap-extension-resize-image";
 import TextAlign from "@tiptap/extension-text-align";
 import { DiffViewer } from "./DiffViewer";
@@ -41,6 +42,7 @@ export const TextEditor: FC<TextEditorProps> = ({
     extensions: [
       StarterKit,
       Indent,
+      Image,
       ImageResize,
       TextAlign.configure({
         types: ["heading", "paragraph"],
@@ -167,10 +169,6 @@ export const TextEditor: FC<TextEditorProps> = ({
     }
   }, [confidenceScore]);
 
-  if (!editor) {
-    return null;
-  }
-
   const toggleFormat = useCallback((format: string): void => {
     if (!editor) return;
     switch (format) {
@@ -196,6 +194,10 @@ export const TextEditor: FC<TextEditorProps> = ({
         break;
     }
   }, [editor]);
+
+  if (!editor) {
+    return null;
+  }
 
   const isSubmitDisabled = confidenceScore < CONFIDENCE_THRESHOLD;
 
