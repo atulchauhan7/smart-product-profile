@@ -1,4 +1,4 @@
-import { useState, FC, ChangeEvent, useCallback, useRef, ClipboardEvent } from "react";
+import { useState, FC, ChangeEvent, useCallback, useRef, ClipboardEvent, useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
@@ -15,7 +15,24 @@ interface TextEditorProps {
   onRejectChanges?: () => void;
   confidenceScore: number;
 }
-
+const transformTextCase = (text: string, type: string) => {
+  switch (type) {
+    case 'upper': 
+      return text.toUpperCase();
+    case 'lower':
+      return text.toLowerCase();
+    case 'sentence':
+      return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    case 'capitalize':
+      return text
+        .toLowerCase()
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    default:
+      return text;
+  }
+};
 export const TextEditor: FC<TextEditorProps> = ({
   proposedChanges,
   onAcceptChanges,
@@ -24,6 +41,8 @@ export const TextEditor: FC<TextEditorProps> = ({
 }) => {
   const [title, setTitle] = useState("Untitled Product");
   const imageInputRef = useRef<HTMLInputElement | null>(null);
+    const [showCaseMenu, setShowCaseMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null)
 
   const initialContent = `<h2>1General Information</h2>
 <p>Lorem ipsum is a dummy or placeholder text commonly used in graphic design, publishing, and web development. Its purpose is to permit a page layout to be designed, independently of the copy that will subsequently populate it, or to demonstrate various fonts of a typeface without meaningful text that could be distracting.</p>
@@ -59,6 +78,30 @@ export const TextEditor: FC<TextEditorProps> = ({
       },
     },
   });
+
+   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowCaseMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
+  if (!editor) return;
+  const { from, to, empty } = editor.state.selection;
+  if (empty) return; 
+
+  const selectedText = editor.state.doc.textBetween(from, to, ' ');
+  
+  const newText = transformTextCase(selectedText, type);
+
+  editor.chain().focus().insertContentAt({ from, to }, newText).run();
+  setShowCaseMenu(false);
+};
+
 
   const handleTitleChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
     setTitle(e.target.value);
@@ -253,6 +296,25 @@ export const TextEditor: FC<TextEditorProps> = ({
         >
           <u>U</u>
         </button>
+         <div className="case-dropdown-wrapper" ref={menuRef} style={{ position: 'relative', display: 'inline-block' }}>
+          <button
+            className={`toolbar-btn ${showCaseMenu ? "active" : ""}`}
+            onClick={() => setShowCaseMenu(!showCaseMenu)}
+            title="Change case"
+            type="button"
+          >
+            <span style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>Aa</span>
+          </button>
+
+          {showCaseMenu && (
+            <div className="case-dropdown-menu">
+              <button onClick={() => applyCase('sentence')}>Sentence case</button>
+              <button onClick={() => applyCase('lower')}>lower case</button>
+              <button onClick={() => applyCase('upper')}>UPPER CASE</button>
+              <button onClick={() => applyCase('capitalize')}>Capitalize Each Word</button>
+            </div>
+          )}
+        </div>
         <div className="toolbar-divider"></div>
         <button
           className={`toolbar-btn ${editor?.isActive("bulletList") ? "active" : ""}`}
