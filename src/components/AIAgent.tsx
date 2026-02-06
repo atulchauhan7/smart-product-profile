@@ -6,7 +6,7 @@ import { ChatMessage } from "../types";
 
 interface AIAgentProps {
   onProposeChanges?: (newContent: string) => void;
-  onConfidenceScoreChange?: (score: number) => void; 
+  onConfidenceScoreChange?: (score: number) => void;
 }
 
 type ChatMessageWithAttachment = ChatMessage & {
@@ -15,7 +15,7 @@ type ChatMessageWithAttachment = ChatMessage & {
 
 export const AIAgent: FC<AIAgentProps> = ({
   onProposeChanges,
-  onConfidenceScoreChange, 
+  onConfidenceScoreChange,
 }) => {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
@@ -51,8 +51,8 @@ export const AIAgent: FC<AIAgentProps> = ({
 
   const [inputValue, setInputValue] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  // const [confidenceScore, setConfidenceScore] = useState(70); 
-  const [confidenceScore] = useState(20); 
+  // const [confidenceScore, setConfidenceScore] = useState(70);
+  const [confidenceScore] = useState(20);
   const [showTooltip, setShowTooltip] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -108,9 +108,9 @@ export const AIAgent: FC<AIAgentProps> = ({
   const isImageContent = (content: string): boolean => {
     try {
       const trimmed = content.trim();
-      if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+      if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
         const parsed = JSON.parse(trimmed);
-        return parsed && parsed.type === 'image';
+        return parsed && parsed.type === "image";
       }
     } catch {
       return false;
@@ -205,7 +205,7 @@ export const AIAgent: FC<AIAgentProps> = ({
       }, 0);
       setSelectedFiles([]);
 
-      // Simulate confidence score increase 
+      // Simulate confidence score increase
       // setConfidenceScore((prev) => Math.min(prev + 5, 100));
 
       // Simulate AI response with delay
@@ -234,25 +234,34 @@ export const AIAgent: FC<AIAgentProps> = ({
     }
   };
 
- const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-  const files = Array.from(e.clipboardData.files || []);
-  
-  const allowedExtensions = ['.docx', '.txt', '.pdf', '.png', '.jpg', '.jpeg'];
-  
-  const validFiles = files.filter((file) => {
-    const fileName = file.name.toLowerCase();
-    return allowedExtensions.some(ext => fileName.endsWith(ext));
-  });
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const files = Array.from(e.clipboardData.files || []);
 
-  if (validFiles.length > 0) {
-    e.preventDefault();
-    addFiles(validFiles);
-    
-    if (validFiles.length < files.length) {
-      console.log('Some files were rejected. Only .docx, .txt, .pdf, and image files are allowed.');
+    const allowedExtensions = [
+      ".docx",
+      ".txt",
+      ".pdf",
+      ".png",
+      ".jpg",
+      ".jpeg",
+    ];
+
+    const validFiles = files.filter((file) => {
+      const fileName = file.name.toLowerCase();
+      return allowedExtensions.some((ext) => fileName.endsWith(ext));
+    });
+
+    if (validFiles.length > 0) {
+      e.preventDefault();
+      addFiles(validFiles);
+
+      if (validFiles.length < files.length) {
+        console.log(
+          "Some files were rejected. Only .docx, .txt, .pdf, and image files are allowed.",
+        );
+      }
     }
-  }
-};
+  };
 
   return (
     <div className="ai-agent">
@@ -300,7 +309,9 @@ export const AIAgent: FC<AIAgentProps> = ({
                 {!isImageContent(message.content) && (
                   <button
                     className="message-copy-btn"
-                    onClick={() => handleCopyMessage(message.id, message.content)}
+                    onClick={() =>
+                      handleCopyMessage(message.id, message.content)
+                    }
                     title="Copy message"
                   >
                     {copiedMessageId === message.id ? (
@@ -366,26 +377,37 @@ export const AIAgent: FC<AIAgentProps> = ({
           />
           <div className="input-actions">
             <label className="upload-btn">
-              <img
-                src="/src/assets/paperclip.svg"
-                alt="Attach"
-                className="attach-icon"
+              <div>
+                <img
+                  src="/src/assets/paperclip.svg"
+                  alt="Attach"
+                  className="attach-icon"
+                />
+              </div>
+              <input
+                type="file"
+                hidden
+                multiple
+                accept=".docx,.txt,.pdf,.png,.jpg,.jpeg"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  const allowedExtensions = [
+                    ".docx",
+                    ".txt",
+                    ".pdf",
+                    ".png",
+                    ".jpg",
+                    ".jpeg",
+                  ];
+                  const validFiles = files.filter((file) => {
+                    const fileName = file.name.toLowerCase();
+                    return allowedExtensions.some((ext) =>
+                      fileName.endsWith(ext),
+                    );
+                  });
+                  addFiles(validFiles);
+                }}
               />
-            <input
-  type="file"
-  hidden
-  multiple
-  accept=".docx,.txt,.pdf,.png,.jpg,.jpeg"
-  onChange={(e) => {
-    const files = Array.from(e.target.files || []);
-    const allowedExtensions = ['.docx', '.txt', '.pdf', '.png', '.jpg', '.jpeg'];
-    const validFiles = files.filter((file) => {
-      const fileName = file.name.toLowerCase();
-      return allowedExtensions.some(ext => fileName.endsWith(ext));
-    });
-    addFiles(validFiles);
-  }}
-/>
             </label>
             <button
               className="send-btn"
@@ -405,7 +427,7 @@ export const AIAgent: FC<AIAgentProps> = ({
                   className="remove-file-btn"
                   onClick={() =>
                     setSelectedFiles((prev) =>
-                      prev.filter((_, i) => i !== index)
+                      prev.filter((_, i) => i !== index),
                     )
                   }
                 >
