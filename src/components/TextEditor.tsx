@@ -6,10 +6,12 @@ import ImageResize from "tiptap-extension-resize-image";
 import TextAlign from "@tiptap/extension-text-align";
 import { DiffViewer } from "./DiffViewer";
 import "../styles/text-editor.css";
-import { Indent } from "../extension/Indent";
+import { Indent } from "../extensions/Indent";
 import { CONFIDENCE_THRESHOLD } from "../constants";
 import Link from '@tiptap/extension-link';
 import LinkModal from "./LinkModal";
+import { FileAttachment} from "../extensions/FileAttachment";
+
 
 interface TextEditorProps {
   proposedChanges?: string | null;
@@ -76,6 +78,7 @@ export const TextEditor: FC<TextEditorProps> = ({
       TextAlign.configure({
         types: ["heading", "paragraph"],
       }),
+       FileAttachment, 
     ],
     content: initialContent,
     onSelectionUpdate: () => {
@@ -298,6 +301,36 @@ const handleInsertLink = (url: string, openInNewTab: boolean) => {
   }
 
   const isSubmitDisabled = confidenceScore < CONFIDENCE_THRESHOLD;
+const handleAttachFile = () => {
+  const input = document.createElement("input");
+  input.type = "file";
+
+  input.onchange = async () => {
+    const file = input.files?.[0];
+    if (!file || !editor) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      editor
+        .chain()
+        .focus()
+        .insertContent({
+          type: "fileAttachment",
+          attrs: {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            src: reader.result,
+          },
+        })
+        .run();
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  input.click();
+};
 
   return (
     <div className="text-editor">
@@ -435,13 +468,15 @@ const handleInsertLink = (url: string, openInNewTab: boolean) => {
             className="toolbar-icon"
           />
         </button>
- <button className="toolbar-btn" title="Insert File" type="button">
-          <img
-            src="/src/assets/file.svg"
-            alt="insert file"
-            className="toolbar-icon"
-          />
-        </button>
+<button
+  className="toolbar-btn"
+  title="Insert File"
+  type="button"
+  onClick={handleAttachFile}
+>
+  <img src="/src/assets/file.svg" alt="insert file" />
+</button>
+
         <button
           className="toolbar-btn"
           title="Insert Image"
