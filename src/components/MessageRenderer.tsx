@@ -1,24 +1,9 @@
-import { FC, useState } from "react";
+import { FC, useState, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ImagePreviewModal } from "./ImagePreviewModal";
-
-interface MessageChange {
-  old_msg: string;
-  new_msg: string;
-}
-
-interface MessageImage {
-  url: string;
-  alt?: string;
-}
-
-interface MessageData {
-  type: "text" | "change" | "image";
-  content?: string;
-  change?: MessageChange;
-  image?: MessageImage;
-}
+import { isHTMLContent, parseMessageData } from "../utils/helpers";
+import { MARKDOWN_STYLES } from "../utils/markdownStyles";
 
 interface MessageRendererProps {
   content: string;
@@ -30,32 +15,8 @@ export const MessageRenderer: FC<MessageRendererProps> = ({ content }) => {
     alt: string;
   } | null>(null);
 
-  // Check if content is HTML
-  const isHTMLContent = (text: string): boolean => {
-    return text.trim().startsWith("<") && text.includes("</");
-  };
-
-  // Try to parse as JSON first
-  const parseMessageData = (text: string): MessageData | null => {
-    try {
-      // Trim whitespace and check if it looks like JSON
-      const trimmed = text.trim();
-      if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
-        const parsed = JSON.parse(trimmed);
-        if (parsed && typeof parsed === "object" && parsed.type) {
-          return parsed as MessageData;
-        }
-      }
-    } catch (error) {
-      console.log("JSON parse error:", error);
-      return null;
-    }
-    return null;
-  };
-
-  const messageData = parseMessageData(content);
-  console.log("Content:", content);
-  console.log("Parsed messageData:", messageData);
+  // Memoized parsed message data
+  const messageData = useMemo(() => parseMessageData(content), [content]);
 
   // Handle HTML content (for diff viewer triggers)
   if (isHTMLContent(content)) {
@@ -172,132 +133,36 @@ export const MessageRenderer: FC<MessageRendererProps> = ({ content }) => {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        // Custom styles for markdown elements
-        h1: ({ node, ...props }) => (
-          <h1
-            style={{
-              fontSize: "1.5em",
-              fontWeight: "bold",
-              marginTop: "0.5em",
-              marginBottom: "0.5em",
-            }}
-            {...props}
-          />
-        ),
-        h2: ({ node, ...props }) => (
-          <h2
-            style={{
-              fontSize: "1.3em",
-              fontWeight: "bold",
-              marginTop: "0.5em",
-              marginBottom: "0.5em",
-            }}
-            {...props}
-          />
-        ),
-        h3: ({ node, ...props }) => (
-          <h3
-            style={{
-              fontSize: "1.1em",
-              fontWeight: "bold",
-              marginTop: "0.5em",
-              marginBottom: "0.5em",
-            }}
-            {...props}
-          />
-        ),
-        p: ({ node, ...props }) => (
-          <p
-            style={{
-              marginTop: "0.5em",
-              marginBottom: "0.5em",
-              lineHeight: "1.6",
-            }}
-            {...props}
-          />
-        ),
-        ul: ({ node, ...props }) => (
-          <ul
-            style={{
-              marginLeft: "1.5em",
-              marginTop: "0.5em",
-              marginBottom: "0.5em",
-            }}
-            {...props}
-          />
-        ),
-        ol: ({ node, ...props }) => (
-          <ol
-            style={{
-              marginLeft: "1.5em",
-              marginTop: "0.5em",
-              marginBottom: "0.5em",
-            }}
-            {...props}
-          />
-        ),
-        li: ({ node, ...props }) => (
-          <li
-            style={{ marginTop: "0.25em", marginBottom: "0.25em" }}
-            {...props}
-          />
-        ),
+        h1: ({ node, ...props }) => <h1 style={MARKDOWN_STYLES.h1} {...props} />,
+        h2: ({ node, ...props }) => <h2 style={MARKDOWN_STYLES.h2} {...props} />,
+        h3: ({ node, ...props }) => <h3 style={MARKDOWN_STYLES.h3} {...props} />,
+        p: ({ node, ...props }) => <p style={MARKDOWN_STYLES.p} {...props} />,
+        ul: ({ node, ...props }) => <ul style={MARKDOWN_STYLES.ul} {...props} />,
+        ol: ({ node, ...props }) => <ol style={MARKDOWN_STYLES.ol} {...props} />,
+        li: ({ node, ...props }) => <li style={MARKDOWN_STYLES.li} {...props} />,
         code: ({ node, ...props }) => {
           const isInline = !String(props.className || "").includes("language-");
           return isInline ? (
-            <code
-              style={{
-                backgroundColor: "rgba(0,0,0,0.05)",
-                padding: "2px 6px",
-                borderRadius: "3px",
-                fontFamily: "monospace",
-                fontSize: "0.9em",
-              }}
-              {...props}
-            />
+            <code style={MARKDOWN_STYLES.codeInline} {...props} />
           ) : (
-            <code
-              style={{
-                display: "block",
-                backgroundColor: "rgba(0,0,0,0.05)",
-                padding: "12px",
-                borderRadius: "6px",
-                fontFamily: "monospace",
-                fontSize: "0.9em",
-                overflowX: "auto",
-                marginTop: "0.5em",
-                marginBottom: "0.5em",
-              }}
-              {...props}
-            />
+            <code style={MARKDOWN_STYLES.codeBlock} {...props} />
           );
         },
         blockquote: ({ node, ...props }) => (
-          <blockquote
-            style={{
-              borderLeft: "4px solid #d32f2f",
-              paddingLeft: "1em",
-              marginLeft: "0",
-              color: "#666",
-              fontStyle: "italic",
-            }}
-            {...props}
-          />
+          <blockquote style={MARKDOWN_STYLES.blockquote} {...props} />
         ),
         a: ({ node, ...props }) => (
           <a
-            style={{ color: "#d32f2f", textDecoration: "underline" }}
+            style={MARKDOWN_STYLES.a}
             target="_blank"
             rel="noopener noreferrer"
             {...props}
           />
         ),
         strong: ({ node, ...props }) => (
-          <strong style={{ fontWeight: "600" }} {...props} />
+          <strong style={MARKDOWN_STYLES.strong} {...props} />
         ),
-        em: ({ node, ...props }) => (
-          <em style={{ fontStyle: "italic" }} {...props} />
-        ),
+        em: ({ node, ...props }) => <em style={{ fontStyle: "italic" }} {...props} />,
       }}
     >
       {content}

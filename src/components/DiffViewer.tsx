@@ -1,5 +1,6 @@
 import { FC, useMemo, useState } from "react";
 import "../styles/diff-viewer.css";
+import { DIFF_CONTEXT_LINES } from "../constants";
 
 export interface DiffLine {
   type: "add" | "remove" | "context";
@@ -90,13 +91,6 @@ export const DiffViewer: FC<DiffViewerProps> = ({
     const newLines = normalizedNew.split("\n");
     const diffLines: DiffLine[] = [];
 
-    // Log for debugging
-    console.log("=== DIFF VIEWER DEBUG ===");
-    console.log("Original lines count:", originalLines.length);
-    console.log("New lines count:", newLines.length);
-    console.log("First orig line:", JSON.stringify(originalLines[0]));
-    console.log("First new line:", JSON.stringify(newLines[0]));
-
     // Create a simple diff using line matching
     const matched: boolean[] = new Array(newLines.length).fill(false);
     const diffResult: Array<{
@@ -129,20 +123,6 @@ export const DiffViewer: FC<DiffViewerProps> = ({
         diffResult.push({ type: "add", new: j });
       }
     }
-
-    console.log("Diff result before sorting:", diffResult.length, "items");
-    console.log(
-      "Added count:",
-      diffResult.filter((d) => d.type === "add").length,
-    );
-    console.log(
-      "Removed count:",
-      diffResult.filter((d) => d.type === "remove").length,
-    );
-    console.log(
-      "Context count:",
-      diffResult.filter((d) => d.type === "context").length,
-    );
 
     // Sort by position to maintain order
     diffResult.sort((a, b) => {
@@ -206,13 +186,12 @@ export const DiffViewer: FC<DiffViewerProps> = ({
     }
 
     // Group changes into hunks with context
-    const CONTEXT_LINES = 3;
     const hunks: Array<{ start: number; end: number }> = [];
     let hunkStart = changeIndices[0];
     let hunkEnd = changeIndices[0];
 
     for (let i = 1; i < changeIndices.length; i++) {
-      if (changeIndices[i] - hunkEnd <= CONTEXT_LINES * 2 + 1) {
+      if (changeIndices[i] - hunkEnd <= DIFF_CONTEXT_LINES * 2 + 1) {
         hunkEnd = changeIndices[i];
       } else {
         hunks.push({ start: hunkStart, end: hunkEnd });
@@ -225,10 +204,10 @@ export const DiffViewer: FC<DiffViewerProps> = ({
     // Build final output with context
     const finalLines: DiffLine[] = [];
     hunks.forEach((hunk, hunkIndex) => {
-      const contextStart = Math.max(0, hunk.start - CONTEXT_LINES);
+      const contextStart = Math.max(0, hunk.start - DIFF_CONTEXT_LINES);
       const contextEnd = Math.min(
         diffLines.length - 1,
-        hunk.end + CONTEXT_LINES,
+        hunk.end + DIFF_CONTEXT_LINES,
       );
 
       // Add separator between hunks

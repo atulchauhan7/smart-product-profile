@@ -1,9 +1,10 @@
-import { useState, FC, ChangeEvent } from "react";
+import { useState, FC, ChangeEvent, useCallback } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { DiffViewer } from "./DiffViewer";
 import "../styles/text-editor.css";
 import { Indent } from "../extension/Indent";
+import { CONFIDENCE_THRESHOLD } from "../constants";
 
 interface TextEditorProps {
   proposedChanges?: string | null;
@@ -19,7 +20,6 @@ export const TextEditor: FC<TextEditorProps> = ({
   confidenceScore,
 }) => {
   const [title, setTitle] = useState("Untitled Product");
-  const [, forceUpdate] = useState(0);
 
   const initialContent = `<h2>1General Information</h2>
 <p>Lorem ipsum is a dummy or placeholder text commonly used in graphic design, publishing, and web development. Its purpose is to permit a page layout to be designed, independently of the copy that will subsequently populate it, or to demonstrate various fonts of a typeface without meaningful text that could be distracting.</p>
@@ -38,10 +38,10 @@ export const TextEditor: FC<TextEditorProps> = ({
     extensions: [StarterKit, Indent],
     content: initialContent,
     onSelectionUpdate: () => {
-      forceUpdate((n) => n + 1);
+      // Trigger re-render for toolbar state updates
     },
     onUpdate: () => {
-      forceUpdate((n) => n + 1);
+      // Trigger re-render for toolbar state updates
     },
     editorProps: {
       attributes: {
@@ -50,36 +50,37 @@ export const TextEditor: FC<TextEditorProps> = ({
     },
   });
 
-  const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
     setTitle(e.target.value);
-  };
+  }, []);
 
-  const handleAccept = () => {
+  const handleAccept = useCallback((): void => {
     if (editor && proposedChanges) {
       editor.commands.setContent(proposedChanges);
       if (onAcceptChanges) {
         onAcceptChanges(proposedChanges);
       }
     }
-  };
+  }, [editor, proposedChanges, onAcceptChanges]);
 
-  const handleReject = () => {
+  const handleReject = useCallback((): void => {
     if (onRejectChanges) {
       onRejectChanges();
     }
-  };
+  }, [onRejectChanges]);
 
-  const handleSubmitForReview = () => {
-    if (confidenceScore >= 80) {
+  const handleSubmitForReview = useCallback((): void => {
+    if (confidenceScore >= CONFIDENCE_THRESHOLD) {
       alert("Submit for review clicked");
     }
-  };
+  }, [confidenceScore]);
 
   if (!editor) {
     return null;
   }
 
-  const toggleFormat = (format: string) => {
+  const toggleFormat = useCallback((format: string): void => {
+    if (!editor) return;
     switch (format) {
       case "bold":
         editor.chain().focus().toggleBold().run();
@@ -102,9 +103,9 @@ export const TextEditor: FC<TextEditorProps> = ({
       default:
         break;
     }
-  };
+  }, [editor]);
 
-  const isSubmitDisabled = confidenceScore < 80;
+  const isSubmitDisabled = confidenceScore < CONFIDENCE_THRESHOLD;
 
   return (
     <div className="text-editor">
@@ -157,17 +158,6 @@ export const TextEditor: FC<TextEditorProps> = ({
           type="button"
         >
           <u>U</u>
-        </button>
-        <button
-          className={`toolbar-btn ${editor?.isActive("italic") ? "active" : ""}`}
-          onClick={() => toggleFormat("italic")}
-          title="Italic"
-          type="button"
-        >
-          <h4>A</h4>
-          <strong>
-            <h5>A</h5>
-          </strong>
         </button>
         <div className="toolbar-divider"></div>
         <button

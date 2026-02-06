@@ -1,5 +1,6 @@
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import "../styles/image-preview-modal.css";
+import { getDownloadFilename } from "../utils/helpers";
 
 interface ImagePreviewModalProps {
   imageUrl: string;
@@ -12,7 +13,7 @@ export const ImagePreviewModal: FC<ImagePreviewModalProps> = ({
   imageAlt,
   onClose,
 }) => {
-  const handleDownload = async () => {
+  const handleDownload = useCallback(async (): Promise<void> => {
     try {
       // For external URLs, fetch as blob to avoid CORS issues
       if (imageUrl.startsWith("http")) {
@@ -22,8 +23,7 @@ export const ImagePreviewModal: FC<ImagePreviewModalProps> = ({
 
         const link = document.createElement("a");
         link.href = blobUrl;
-        link.download =
-          imageAlt.replace(/[^a-z0-9]/gi, "_").toLowerCase() + ".png";
+        link.download = getDownloadFilename(imageAlt);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -34,8 +34,7 @@ export const ImagePreviewModal: FC<ImagePreviewModalProps> = ({
         // For local images, direct download
         const link = document.createElement("a");
         link.href = imageUrl;
-        link.download =
-          imageAlt.replace(/[^a-z0-9]/gi, "_").toLowerCase() + ".png";
+        link.download = getDownloadFilename(imageAlt);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -45,13 +44,13 @@ export const ImagePreviewModal: FC<ImagePreviewModalProps> = ({
       // Fallback: open in new tab
       window.open(imageUrl, "_blank");
     }
-  };
+  }, [imageUrl, imageAlt]);
 
-  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleBackdropClick = useCallback((e: React.MouseEvent<HTMLDivElement>): void => {
     if (e.target === e.currentTarget) {
       onClose();
     }
-  };
+  }, [onClose]);
 
   return (
     <div className="image-preview-overlay" onClick={handleBackdropClick}>
