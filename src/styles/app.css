@@ -77,8 +77,8 @@ body {
 }
 
 .panel-left {
-  width: 18px;
-  height: 18px;
+  position: relative;
+  right: 5px;
 }
 
 .logo-text {

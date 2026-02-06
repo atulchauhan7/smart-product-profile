@@ -1,24 +1,24 @@
-import { useState, FC, ChangeEvent } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
+import { useState, FC, ChangeEvent } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import { DiffViewer } from "./DiffViewer";
-import '../styles/text-editor.css';
-import { Indent } from '../extension/Indent';
- 
+import "../styles/text-editor.css";
+import { Indent } from "../extension/Indent";
+
 interface TextEditorProps {
   proposedChanges?: string | null;
   onAcceptChanges?: (newContent: string) => void;
   onRejectChanges?: () => void;
-  confidenceScore: number; 
+  confidenceScore: number;
 }
- 
-export const TextEditor: FC<TextEditorProps> = ({ 
+
+export const TextEditor: FC<TextEditorProps> = ({
   proposedChanges,
   onAcceptChanges,
   onRejectChanges,
-  confidenceScore, 
+  confidenceScore,
 }) => {
-  const [title, setTitle] = useState('Untitled Product');
+  const [title, setTitle] = useState("Untitled Product");
   const [, forceUpdate] = useState(0);
 
   const initialContent = `<h2>1General Information</h2>
@@ -35,10 +35,7 @@ export const TextEditor: FC<TextEditorProps> = ({
 <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>`;
 
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Indent,
-    ],
+    extensions: [StarterKit, Indent],
     content: initialContent,
     onSelectionUpdate: () => {
       forceUpdate((n) => n + 1);
@@ -52,7 +49,7 @@ export const TextEditor: FC<TextEditorProps> = ({
       },
     },
   });
- 
+
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
@@ -75,7 +72,6 @@ export const TextEditor: FC<TextEditorProps> = ({
   const handleSubmitForReview = () => {
     if (confidenceScore >= 80) {
       alert("Submit for review clicked");
-     
     }
   };
 
@@ -109,7 +105,7 @@ export const TextEditor: FC<TextEditorProps> = ({
   };
 
   const isSubmitDisabled = confidenceScore < 80;
- 
+
   return (
     <div className="text-editor">
       <div className="editor-header">
@@ -119,14 +115,18 @@ export const TextEditor: FC<TextEditorProps> = ({
             className="editor-title"
             value={title}
             onChange={handleTitleChange}
-            placeholder="Enter product name" 
+            placeholder="Enter product name"
           />
         </div>
         <button
-          className={`submit-review-btn ${isSubmitDisabled ? 'disabled' : ''}`}
+          className={`submit-review-btn ${isSubmitDisabled ? "disabled" : ""}`}
           onClick={handleSubmitForReview}
           disabled={isSubmitDisabled}
-          title={isSubmitDisabled ? `Confidence score must be 80% or higher to submit (current: ${confidenceScore}%)` : "Submit for review"}
+          title={
+            isSubmitDisabled
+              ? `Confidence score must be 80% or higher to submit (current: ${confidenceScore}%)`
+              : "Submit for review"
+          }
         >
           Submit for review
         </button>
