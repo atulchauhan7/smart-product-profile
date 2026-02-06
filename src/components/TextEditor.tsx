@@ -8,6 +8,8 @@ import { DiffViewer } from "./DiffViewer";
 import "../styles/text-editor.css";
 import { Indent } from "../extension/Indent";
 import { CONFIDENCE_THRESHOLD } from "../constants";
+import Link from '@tiptap/extension-link';
+import LinkModal from "./LinkModal";
 
 interface TextEditorProps {
   proposedChanges?: string | null;
@@ -44,8 +46,9 @@ export const TextEditor: FC<TextEditorProps> = ({
   const imageInputRef = useRef<HTMLInputElement | null>(null);
     const [showCaseMenu, setShowCaseMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null)
+  const [showLinkModal, setShowLinkModal] = useState(false);
 
-  const initialContent = `<h2>1General Information</h2>
+  const initialContent = `<h2>General Information</h2>
 <p>Lorem ipsum is a dummy or placeholder text commonly used in graphic design, publishing, and web development. Its purpose is to permit a page layout to be designed, independently of the copy that will subsequently populate it, or to demonstrate various fonts of a typeface without meaningful text that could be distracting.</p>
  
 <p>Lorem ipsum is typically a corrupted version of De finibus bonorum et malorum, a 1st-century BC text by the Roman statesman and philosopher Cicero, with words altered, added, and removed to make it nonsensical and improper Latin. The first two words are the truncation of dolorem ipsum ("pain itself").</p>
@@ -62,6 +65,12 @@ export const TextEditor: FC<TextEditorProps> = ({
     extensions: [
       StarterKit,
       Indent,
+        Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'editor-link',
+        },
+      }),
       Image,
       ImageResize,
       TextAlign.configure({
@@ -70,11 +79,9 @@ export const TextEditor: FC<TextEditorProps> = ({
     ],
     content: initialContent,
     onSelectionUpdate: () => {
-      // force React re-render so toolbar active states update
       setEditorRenderKey((key) => key + 1);
     },
     onUpdate: () => {
-      // force React re-render so toolbar active states update
       setEditorRenderKey((key) => key + 1);
     },
     editorProps: {
@@ -83,6 +90,19 @@ export const TextEditor: FC<TextEditorProps> = ({
       },
     },
   });
+
+   useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        if (editor && !editor.state.selection.empty) {
+          setShowLinkModal(true);
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [editor]);
 
    useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -106,7 +126,37 @@ const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
   editor.chain().focus().insertContentAt({ from, to }, newText).run();
   setShowCaseMenu(false);
 };
+const handleInsertLink = (url: string, openInNewTab: boolean) => {
+    if (!editor) return;
 
+    const { empty } = editor.state.selection;
+    
+    if (empty) {
+      editor
+        .chain()
+        .focus()
+        .insertContent(`<a href="${url}" ${openInNewTab ? 'target="_blank" rel="noopener noreferrer"' : ''}>${url}</a>`)
+        .run();
+    } else {
+      editor
+        .chain()
+        .focus()
+        .setLink({ 
+          href: url,
+          target: openInNewTab ? '_blank' : undefined,
+          rel: openInNewTab ? 'noopener noreferrer' : undefined,
+        })
+        .run();
+    }
+ setShowLinkModal(false);
+  };
+
+  const getSelectedText = () => {
+    if (!editor) return '';
+    const { from, to, empty } = editor.state.selection;
+    if (empty) return '';
+    return editor.state.doc.textBetween(from, to, ' ');
+  };
 
   const handleTitleChange = useCallback((e: ChangeEvent<HTMLInputElement>): void => {
     setTitle(e.target.value);
@@ -373,10 +423,15 @@ const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
         </button>
 
         <div className="toolbar-divider"></div>
-        <button className="toolbar-btn" title="Link" type="button">
+         <button 
+          className={`toolbar-btn ${editor?.isActive("link") ? "active" : ""}`}
+          title="Link [ctrl+k]" 
+          type="button"  
+          onClick={() => setShowLinkModal(true)}
+        >
           <img
             src="/src/assets/link-building.svg"
-            alt="Bullet list"
+            alt="hyper link"
             className="toolbar-icon"
           />
         </button>
@@ -421,6 +476,13 @@ const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
               onChange={handleImageUpload}
             />
             <EditorContent editor={editor} onPaste={handlePaste} />
+
+               <LinkModal
+        isOpen={showLinkModal}
+        onClose={() => setShowLinkModal(false)}
+        onInsert={handleInsertLink}
+        selectedText={getSelectedText()}
+      />
           </>
         )}
       </div>
