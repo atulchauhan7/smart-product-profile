@@ -1,7 +1,9 @@
 import { useState, FC, ChangeEvent, useRef, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import Link from '@tiptap/extension-link';
 import { DiffViewer } from "./DiffViewer";
+import LinkModal from "./LinkModal";
 import '../styles/text-editor.css';
 import { Indent } from '../extension/Indent';
  
@@ -41,9 +43,10 @@ export const TextEditor: FC<TextEditorProps> = ({
   const [, forceUpdate] = useState(0);
 
   const [showCaseMenu, setShowCaseMenu] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null)
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  const initialContent = `<h2>1General Information</h2>
+  const initialContent = `<h2>General Information</h2>
 <p>Lorem ipsum is a dummy or placeholder text commonly used in graphic design, publishing, and web development. Its purpose is to permit a page layout to be designed, independently of the copy that will subsequently populate it, or to demonstrate various fonts of a typeface without meaningful text that could be distracting.</p>
  
 <p>Lorem ipsum is typically a corrupted version of De finibus bonorum et malorum, a 1st-century BC text by the Roman statesman and philosopher Cicero, with words altered, added, and removed to make it nonsensical and improper Latin. The first two words are the truncation of dolorem ipsum ("pain itself").</p>
@@ -60,6 +63,12 @@ export const TextEditor: FC<TextEditorProps> = ({
     extensions: [
       StarterKit,
       Indent,
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'editor-link',
+        },
+      }),
     ],
     content: initialContent,
     onSelectionUpdate: () => {
@@ -85,20 +94,62 @@ export const TextEditor: FC<TextEditorProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        if (editor && !editor.state.selection.empty) {
+          setShowLinkModal(true);
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [editor]);
+
+ const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
   if (!editor) return;
   const { from, to, empty } = editor.state.selection;
   if (empty) return; 
 
   const selectedText = editor.state.doc.textBetween(from, to, ' ');
-  
   const newText = transformTextCase(selectedText, type);
 
   editor.chain().focus().insertContentAt({ from, to }, newText).run();
   setShowCaseMenu(false);
 };
+  const handleInsertLink = (url: string, openInNewTab: boolean) => {
+    if (!editor) return;
 
-  if (!editor) return null;
+    const { empty } = editor.state.selection;
+    
+    if (empty) {
+      editor
+        .chain()
+        .focus()
+        .insertContent(`<a href="${url}" ${openInNewTab ? 'target="_blank" rel="noopener noreferrer"' : ''}>${url}</a>`)
+        .run();
+    } else {
+      editor
+        .chain()
+        .focus()
+        .setLink({ 
+          href: url,
+          target: openInNewTab ? '_blank' : undefined,
+          rel: openInNewTab ? 'noopener noreferrer' : undefined,
+        })
+        .run();
+    }
+
+    setShowLinkModal(false);
+  };
+
+  const getSelectedText = () => {
+    if (!editor) return '';
+    const { from, to, empty } = editor.state.selection;
+    if (empty) return '';
+    return editor.state.doc.textBetween(from, to, ' ');
+  };
 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -122,7 +173,6 @@ const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
   const handleSubmitForReview = () => {
     if (confidenceScore >= 80) {
       alert("Submit for review clicked");
-     
     }
   };
 
@@ -205,7 +255,7 @@ const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
         >
           <u>U</u>
         </button>
-       <div className="case-dropdown-wrapper" ref={menuRef} style={{ position: 'relative', display: 'inline-block' }}>
+        <div className="case-dropdown-wrapper" ref={menuRef} style={{ position: 'relative', display: 'inline-block' }}>
           <button
             className={`toolbar-btn ${showCaseMenu ? "active" : ""}`}
             onClick={() => setShowCaseMenu(!showCaseMenu)}
@@ -277,22 +327,20 @@ const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
         </button>
 
         <div className="toolbar-divider"></div>
-        <button className="toolbar-btn" title="Link" type="button">
+        <button 
+          className={`toolbar-btn ${editor?.isActive("link") ? "active" : ""}`}
+          title="Link [ctrl+k]" 
+          type="button"  
+          onClick={() => setShowLinkModal(true)}
+        >
           <img
             src="/src/assets/link-building.svg"
-            alt="Bullet list"
-            className="toolbar-icon"
-          />
-        </button>
-
-        <button className="toolbar-btn" title="Image" type="button">
-          <img
-            src="/src/assets/image.svg"
-            alt="Bullet list"
+            alt="hyperlink"
             className="toolbar-icon"
           />
         </button>
       </div>
+
       <div className="editor-body">
         {proposedChanges ? (
           <div className="diff-viewer-container">
@@ -307,6 +355,13 @@ const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
           <EditorContent editor={editor} />
         )}
       </div>
+
+      <LinkModal
+        isOpen={showLinkModal}
+        onClose={() => setShowLinkModal(false)}
+        onInsert={handleInsertLink}
+        selectedText={getSelectedText()}
+      />
     </div>
   );
 };
