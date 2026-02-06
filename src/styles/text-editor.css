@@ -6,6 +6,45 @@
   overflow: hidden;
 }
 
+.editor-image {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.editor-image:hover {
+  opacity: 0.9;
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 2px solid #007bff;
+  border-radius: 4px;
+}
+
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1rem 0;
+  border-radius: 4px;
+}
+
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 2px solid #007bff;
+  border-radius: 4px;
+}
+
+.resize-cursor {
+  cursor: nwse-resize;
+}
+
+img[data-drag-handle] {
+  cursor: nwse-resize;
+}
+
 .editor-header {
   display: flex;
   justify-content: space-between;

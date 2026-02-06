@@ -2,6 +2,8 @@ import { useState, FC, ChangeEvent, useRef, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
+
+import ImageResize from 'tiptap-extension-resize-image';
 import { DiffViewer } from "./DiffViewer";
 import LinkModal from "./LinkModal";
 import '../styles/text-editor.css';
@@ -45,6 +47,7 @@ export const TextEditor: FC<TextEditorProps> = ({
   const [showCaseMenu, setShowCaseMenu] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const initialContent = `<h2>General Information</h2>
 <p>Lorem ipsum is a dummy or placeholder text commonly used in graphic design, publishing, and web development. Its purpose is to permit a page layout to be designed, independently of the copy that will subsequently populate it, or to demonstrate various fonts of a typeface without meaningful text that could be distracting.</p>
@@ -68,6 +71,10 @@ export const TextEditor: FC<TextEditorProps> = ({
         HTMLAttributes: {
           class: 'editor-link',
         },
+      }),
+      ImageResize.configure({
+        inline: true,
+        allowBase64: true,
       }),
     ],
     content: initialContent,
@@ -107,17 +114,18 @@ export const TextEditor: FC<TextEditorProps> = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [editor]);
 
- const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
-  if (!editor) return;
-  const { from, to, empty } = editor.state.selection;
-  if (empty) return; 
+  const applyCase = (type: 'sentence' | 'lower' | 'upper' | 'capitalize') => {
+    if (!editor) return;
+    const { from, to, empty } = editor.state.selection;
+    if (empty) return; 
 
-  const selectedText = editor.state.doc.textBetween(from, to, ' ');
-  const newText = transformTextCase(selectedText, type);
+    const selectedText = editor.state.doc.textBetween(from, to, ' ');
+    const newText = transformTextCase(selectedText, type);
 
-  editor.chain().focus().insertContentAt({ from, to }, newText).run();
-  setShowCaseMenu(false);
-};
+    editor.chain().focus().insertContentAt({ from, to }, newText).run();
+    setShowCaseMenu(false);
+  };
+
   const handleInsertLink = (url: string, openInNewTab: boolean) => {
     if (!editor) return;
 
@@ -142,6 +150,52 @@ export const TextEditor: FC<TextEditorProps> = ({
     }
 
     setShowLinkModal(false);
+  };
+
+  const handleImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select a valid image file');
+      return;
+    }
+
+    // Optional: Validate file size (e.g., max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+
+    // Convert image to base64
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64Image = e.target?.result as string;
+      if (editor && base64Image) {
+        // Insert image at current cursor position
+        editor.chain().focus().setImage({ 
+          src: base64Image,
+          alt: file.name 
+        }).run();
+      }
+    };
+
+    reader.onerror = () => {
+      alert('Failed to read the image file');
+    };
+
+    reader.readAsDataURL(file);
+
+    // Reset input value so the same file can be selected again
+    if (imageInputRef.current) {
+      imageInputRef.current.value = '';
+    }
+  };
+
+  const handleImageButtonClick = () => {
+    imageInputRef.current?.click();
   };
 
   const getSelectedText = () => {
@@ -314,7 +368,7 @@ export const TextEditor: FC<TextEditorProps> = ({
           type="button"
           onClick={() => editor?.commands.decreaseIndent()}
         >
-          <img src="/src/assets/left-indent.svg" className="toolbar-icon" />
+          <img src="/src/assets/left-indent.svg" className="toolbar-icon" alt="Decrease indent" />
         </button>
 
         <button
@@ -323,15 +377,16 @@ export const TextEditor: FC<TextEditorProps> = ({
           type="button"
           onClick={() => editor?.commands.increaseIndent()}
         >
-          <img src="/src/assets/right-indent.svg" className="toolbar-icon" />
+          <img src="/src/assets/right-indent.svg" className="toolbar-icon" alt="Increase indent" />
         </button>
 
         <div className="toolbar-divider"></div>
+       
         <button 
           className={`toolbar-btn ${editor?.isActive("link") ? "active" : ""}`}
-          title="Link [ctrl+k]" 
-          type="button"  
           onClick={() => setShowLinkModal(true)}
+          title="Insert Link"
+          type="button"
         >
           <img
             src="/src/assets/link-building.svg"
@@ -339,7 +394,31 @@ export const TextEditor: FC<TextEditorProps> = ({
             className="toolbar-icon"
           />
         </button>
+        <button
+          className="toolbar-btn"
+          title="Insert File"
+          type="button"
+        >
+          <img src="/src/assets/file.svg" className="toolbar-icon" alt="Insert file" />
+        </button>
+        <button
+          className="toolbar-btn"
+          title="Insert Image"
+          type="button"
+          onClick={handleImageButtonClick}
+        >
+          <img src="/src/assets/image.svg" className="toolbar-icon" alt="Insert image" />
+        </button>
       </div>
+      
+      {/* Hidden file input for image upload */}
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleImageUpload}
+      />
 
       <div className="editor-body">
         {proposedChanges ? (
