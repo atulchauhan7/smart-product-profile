@@ -411,7 +411,7 @@ const handleAttachFile = () => {
           type="button"
         >
           <img
-            src="/src/assets/icons-bulleted-list.svg"
+            src="/src/assets/list.svg"
             alt="Bullet list"
             className="toolbar-icon"
           />
@@ -424,7 +424,7 @@ const handleAttachFile = () => {
           type="button"
         >
           <img
-            src="/src/assets/better-number-list.svg"
+            src="/src/assets/list-ordered.svg"
             alt="Bullet list"
             className="toolbar-icon"
           />
@@ -443,7 +443,7 @@ const handleAttachFile = () => {
           type="button"
           onClick={() => editor?.commands.decreaseIndent()}
         >
-          <img src="/src/assets/left-indent.svg" className="toolbar-icon" />
+          <img src="/src/assets/list-indent-decrease.svg" className="toolbar-icon" />
         </button>
 
         <button
@@ -452,7 +452,7 @@ const handleAttachFile = () => {
           type="button"
           onClick={() => editor?.commands.increaseIndent()}
         >
-          <img src="/src/assets/right-indent.svg" className="toolbar-icon" />
+          <img src="/src/assets/list-indent-increase.svg" className="toolbar-icon" />
         </button>
 
         <div className="toolbar-divider"></div>
@@ -463,7 +463,7 @@ const handleAttachFile = () => {
           onClick={() => setShowLinkModal(true)}
         >
           <img
-            src="/src/assets/link-building.svg"
+            src="/src/assets/link.svg"
             alt="hyper link"
             className="toolbar-icon"
           />

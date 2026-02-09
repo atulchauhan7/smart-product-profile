@@ -308,7 +308,6 @@ img[data-drag-handle] {
   display: flex;
   align-items: center;
   gap: 2px;
-  padding: 0px 10px;
   border-bottom: 1px solid #e0e0e0;
   background-color: #ffffff;
   flex-wrap: wrap;
@@ -331,6 +330,7 @@ img[data-drag-handle] {
   font-weight: 500;
 }
 
+
 .toolbar-btn:hover {
   background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
   border-color: #d0d0d0;
@@ -347,7 +347,6 @@ img[data-drag-handle] {
   width: 1px;
   height: 30px;
   background-color: #e0e0e0;
-  margin: 0 4px;
 }
 
 .editor-content {
